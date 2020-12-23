@@ -1,5 +1,10 @@
 #data science project on stock prices for 5 companies: Amazon, Apple, CBS/Viacom, Disney, Netflix
 #from sept 22 to Dec 22
+#attach libraries
+library(ggplot2)
+library(ggthemes)
+library(tidyr)
+library(dplyr)
 #set up data folder
 if(!dir.exists("./data")) (dir.create("./data"))
 #download amazon data to data folder
