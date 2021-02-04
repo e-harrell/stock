@@ -10,7 +10,7 @@ output:
 
 
 ## Summary
-### This project compares stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 22, 2020 to December 22,2020.
+### This project compares the high stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 22, 2020 to December 22,2020.
 
 
 
@@ -82,8 +82,26 @@ library(dplyr)
 library(forecast)
 ```
 
-## Loading Data-creating data folder, downloading datasets from Yahoo Finance and loading data into R Studio.
+## Loading Data
+### Creating data folder, downloading datasets from Yahoo Finance and loading data into R Studio.
 
+```r
+if(!dir.exists("./data")) {dir.create("./data")}
+download.file("https://query1.finance.yahoo.com/v7/finance/download/AMZN?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/amazon.csv")
+
+download.file("https://query1.finance.yahoo.com/v7/finance/download/AAPL?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/apple.csv")
+
+download.file("https://query1.finance.yahoo.com/v7/finance/download/VIAC?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/cbs.csv")
+
+download.file("https://query1.finance.yahoo.com/v7/finance/download/DIS?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/disney.csv")
+
+download.file("https://query1.finance.yahoo.com/v7/finance/download/NFLX?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true", "./data/netflix.csv")
+amazon<-read.csv("./data/amazon.csv")
+apple<-read.csv("./data/apple.csv")
+disney<-read.csv("./data/disney.csv")
+cbs<-read.csv("./data/cbs.csv")
+netflix<-read.csv("./data/netflix.csv")
+```
 
 ## Data Wrangling
 ### Look at individual datasets, merge into a single dataset, and look at merged dataset.
@@ -323,15 +341,50 @@ library(forecast)
 ```
 
 ## Amazon forecasting analysis
+### The line chart of the Amazon data with the associated regression line shows a a slight decrease in the high price over time. When the time series was decomposed, the trend showed a clear decrease.  The seasonal trend showed 2 period where there was a clear decrease in the high price. tEh plot of the forecasted data along with the observed dsata showed that the forecasted results did fall withint the 95% confidence level of the observed data. In terms of accuracy, the root mean squared erro was 61% for the training data and 65% for the testing data, showing that the model did not do well in predicting future high procies of the Amazon stock.
+
+```r
+ggplot(data,aes(Date, amazonHigh, group=1))+
+  geom_line(color="darkblue" ,size=2)+
+  geom_smooth(method=lm,se=FALSE, colour="black")+
+  ggtitle("High stock prices for Amazon Sept 22-Dec 22")
+```
 
 ```
 ## `geom_smooth()` using formula 'y ~ x'
 ```
 
-![](Results_files/figure-html/amazon-1.png)<!-- -->![](Results_files/figure-html/amazon-2.png)<!-- -->![](Results_files/figure-html/amazon-3.png)<!-- -->
+![](Results_files/figure-html/amazon-1.png)<!-- -->
+
+```r
+#ts function creates time series object
+ts1 <- ts(data$amazonHigh,frequency=32)
+#plot time series object(daily high prices for Amazon)
+plot(ts1,xlab="Days+1", ylab="AMZN")
+```
+
+![](Results_files/figure-html/amazon-2.png)<!-- -->
+
+```r
+plot(decompose(ts1),xlab="Days+1")
+```
+
+![](Results_files/figure-html/amazon-3.png)<!-- -->
+
+```r
+#training & test sets-have to build sets with consecutive time points
+ts1Train <- window(ts1,start=1,end=1.7)
+#window function creates test set that starts at time point 1.8
+ts1Test <- window(ts1,start=1.8,end=2.97)
+```
 
 ```
 ## Warning in window.default(x, ...): 'end' value not changed
+```
+
+```r
+#show test data
+ts1Train
 ```
 
 ```
@@ -344,7 +397,33 @@ library(forecast)
 ## [19] 3329.00 3266.00 3233.88 3198.75 3205.33
 ```
 
-![](Results_files/figure-html/amazon-4.png)<!-- -->![](Results_files/figure-html/amazon-5.png)<!-- -->
+```r
+#simple moving average
+#plot training data 
+#moving average (ma function) to plot)
+plot(ts1Train)
+lines(ma(ts1Train,order=3),col="red")
+```
+
+![](Results_files/figure-html/amazon-4.png)<!-- -->
+
+```r
+#exponential smoothing
+#fit model that had different types of trends you want to fit
+ets1 <- ets(ts1Train)
+#get predictions and prediction bounds with forecast function
+fcast <- forecast(ets1)
+plot(fcast); 
+lines(ts1Test,col="red")
+```
+
+![](Results_files/figure-html/amazon-5.png)<!-- -->
+
+```r
+#get accuracy
+#accuracy(forecast,test set)
+accuracy(fcast,ts1Test)
+```
 
 ```
 ##                      ME     RMSE      MAE        MPE     MAPE MASE      ACF1
@@ -388,7 +467,7 @@ plot(decompose(ts1),xlab="Days+1")
 ```r
 #training & test sets-have to build sets with consecutive time points
 ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 5
+#window function creates test set that starts at time point 1.8
 ts1Test <- window(ts1,start=1.8,end=2.97)
 ```
 
@@ -481,7 +560,7 @@ plot(decompose(ts1),xlab="Days+1")
 ```r
 #training & test sets-have to build sets with consecutive time points
 ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 5
+#window function creates test set that starts at time point 1.8
 ts1Test <- window(ts1,start=1.8,end=2.97)
 ```
 
@@ -578,7 +657,7 @@ plot(decompose(ts1),xlab="Days+1")
 ```r
 #training & test sets-have to build sets with consecutive time points
 ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 5
+#window function creates test set that starts at time point 1.8
 ts1Test <- window(ts1,start=1.8,end=2.97)
 ```
 
@@ -671,7 +750,7 @@ plot(decompose(ts1),xlab="Days+1")
 ```r
 #training & test sets-have to build sets with consecutive time points
 ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 5
+#window function creates test set that starts at time point 1.8
 ts1Test <- window(ts1,start=1.8,end=2.97)
 ```
 
