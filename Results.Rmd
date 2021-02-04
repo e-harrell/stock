@@ -1,7 +1,7 @@
 ---
 title: "Stock prices data science project"
 author: "Erika Harrell"
-date: "1/8/2021"
+date: "2/3/2021"
 output: 
   html_document: 
     keep_md: yes
@@ -12,15 +12,17 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Summary
-### This project compars stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took pirces from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 22, 2020 to December 22,2020.
+### This project compares stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 22, 2020 to December 22,2020.
 
 
 ```{r libraries}
-#adding libraries
+#attach libraries
 library(ggplot2)
 library(ggthemes)
 library(tidyr)
+library(quantmod)
 library(dplyr)
+library(forecast)
 ```
 
 ## Loading Data-creating data folder, downloading datasets from Yahoo Finance and loading data into R Studio.
@@ -29,6 +31,7 @@ if(!dir.exists("./data")) {dir.create("./data")}
 download.file("https://query1.finance.yahoo.com/v7/finance/download/AMZN?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/amazon.csv")
 
 download.file("https://query1.finance.yahoo.com/v7/finance/download/AAPL?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/apple.csv")
+
 download.file("https://query1.finance.yahoo.com/v7/finance/download/VIAC?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/cbs.csv")
 
 download.file("https://query1.finance.yahoo.com/v7/finance/download/DIS?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/disney.csv")
@@ -42,7 +45,7 @@ netflix<-read.csv("./data/netflix.csv")
 ```
 
 ## Data Wrangling
-### Look at individual datasets, merge into a single dataset, and look at single dataset.
+### Look at individual datasets, merge into a single dataset, and look at merged dataset.
 ```{r wrangle, echo=FALSE}
 #Details of individual data sets
 summary(amazon)
@@ -94,28 +97,197 @@ summary(data)
 str(data)
 ```
 
-## Plots of High prices
-
-```{r plots, echo=FALSE}
+## Amazon forecasting analysis
+```{r amazon, echo=FALSE}
 ggplot(data,aes(Date, amazonHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
   geom_smooth(method=lm,se=FALSE, colour="black")+
   ggtitle("High stock prices for Amazon Sept 22-Dec 22")
+
+#ts function creates time series object
+ts1 <- ts(data$amazonHigh,frequency=32)
+#plot time series object(daily high prices for Amazon)
+plot(ts1,xlab="Days+1", ylab="AMZN")
+plot(decompose(ts1),xlab="Days+1")
+
+#training & test sets-have to build sets with consecutive time points
+ts1Train <- window(ts1,start=1,end=1.7)
+#window function creates test set that starts at time point 5
+ts1Test <- window(ts1,start=1.8,end=2.97)
+#show test data
+ts1Train
+
+#simple moving average
+#plot training data 
+#moving average (ma function) to plot)
+plot(ts1Train)
+lines(ma(ts1Train,order=3),col="red")
+
+#exponential smoothing
+#fit model that had different types of trends you want to fit
+ets1 <- ets(ts1Train)
+#get predictions and prediction bounds with forecast function
+fcast <- forecast(ets1)
+plot(fcast); 
+lines(ts1Test,col="red")
+
+#get accuracy
+#accuracy(forecast,test set)
+accuracy(fcast,ts1Test)
+```
+
+## Apple forecasting analysis
+```{r apple}
 ggplot(data,aes(Date, appleHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
   geom_smooth(method=lm,se=FALSE, colour="black")+
   ggtitle("High stock prices for Apple Sept 22-Dec 22")
+
+#ts function creates time series object
+ts1 <- ts(data$appleHigh,frequency=32)
+#plot time series object(daily high prices for Apple)
+plot(ts1,xlab="Days+1", ylab="AAPL")
+plot(decompose(ts1),xlab="Days+1")
+
+#training & test sets-have to build sets with consecutive time points
+ts1Train <- window(ts1,start=1,end=1.7)
+#window function creates test set that starts at time point 5
+ts1Test <- window(ts1,start=1.8,end=2.97)
+#show test data
+ts1Train
+
+#simple moving average
+#plot training data 
+#moving average (ma function) to plot)
+plot(ts1Train)
+lines(ma(ts1Train,order=3),col="red")
+
+#exponential smoothing
+#fit model that had different types of trends you want to fit
+ets1 <- ets(ts1Train)
+#get predictions and prediction bounds with forecast function
+fcast <- forecast(ets1)
+plot(fcast); 
+lines(ts1Test,col="red")
+
+#get accuracy
+#accuracy(forecast,test set)
+accuracy(fcast,ts1Test)
+```
+
+## CBS/Viacom forecasting analysis
+```{r cbs}
 ggplot(data,aes(Date, cbsHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
   geom_smooth(method=lm,se=FALSE, colour="black")+
-  ggtitle("High stock prices for CBS Sept 22-Dec 22")
+  ggtitle("High stock prices for CBS/Viacom Sept 22-Dec 22")
+
+#ts function creates time series object
+ts1 <- ts(data$cbsHigh,frequency=32)
+#plot time series object(daily high prices for CBS/Viacom)
+plot(ts1,xlab="Days+1", ylab="VIAC")
+plot(decompose(ts1),xlab="Days+1")
+
+#training & test sets-have to build sets with consecutive time points
+ts1Train <- window(ts1,start=1,end=1.7)
+#window function creates test set that starts at time point 5
+ts1Test <- window(ts1,start=1.8,end=2.97)
+#show test data
+ts1Train
+
+#simple moving average
+#plot training data 
+#moving average (ma function) to plot)
+plot(ts1Train)
+lines(ma(ts1Train,order=3),col="red")
+
+#exponential smoothing
+#fit model that had different types of trends you want to fit
+ets1 <- ets(ts1Train)
+#get predictions and prediction bounds with forecast function
+fcast <- forecast(ets1)
+plot(fcast); 
+lines(ts1Test,col="red")
+
+#get accuracy
+#accuracy(forecast,test set)
+accuracy(fcast,ts1Test)
+```
+
+## Disney forecasting analysis
+```{r disney}
 ggplot(data,aes(Date, disneyHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
   geom_smooth(method=lm,se=FALSE, colour="black")+
   ggtitle("High stock prices for Disney Sept 22-Dec 22")
+
+#ts function creates time series object
+ts1 <- ts(data$disneyHigh,frequency=32)
+#plot time series object(daily high prices for Disney)
+plot(ts1,xlab="Days+1", ylab="DIS")
+plot(decompose(ts1),xlab="Days+1")
+
+#training & test sets-have to build sets with consecutive time points
+ts1Train <- window(ts1,start=1,end=1.7)
+#window function creates test set that starts at time point 5
+ts1Test <- window(ts1,start=1.8,end=2.97)
+#show test data
+ts1Train
+
+#simple moving average
+#plot training data 
+#moving average (ma function) to plot)
+plot(ts1Train)
+lines(ma(ts1Train,order=3),col="red")
+
+#exponential smoothing
+#fit model that had different types of trends you want to fit
+ets1 <- ets(ts1Train)
+#get predictions and prediction bounds with forecast function
+fcast <- forecast(ets1)
+plot(fcast); 
+lines(ts1Test,col="red")
+
+#get accuracy
+#accuracy(forecast,test set)
+accuracy(fcast,ts1Test)
+```
+
+## Netflix forecasting analysis
+```{r netflix}
 ggplot(data,aes(Date, netflixHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
   geom_smooth(method=lm,se=FALSE, colour="black")+
   ggtitle("High stock prices for Netflix Sept 22-Dec 22")
-par(mfrow=c(1,1))
+#ts function creates time series object
+ts1 <- ts(data$netflixHigh,frequency=32)
+#plot time series object(daily high prices for Netflix)
+plot(ts1,xlab="Days+1", ylab="NFLX")
+plot(decompose(ts1),xlab="Days+1")
+
+#training & test sets-have to build sets with consecutive time points
+ts1Train <- window(ts1,start=1,end=1.7)
+#window function creates test set that starts at time point 5
+ts1Test <- window(ts1,start=1.8,end=2.97)
+#show test data
+ts1Train
+
+#simple moving average
+#plot training data 
+#moving average (ma function) to plot)
+plot(ts1Train)
+lines(ma(ts1Train,order=3),col="red")
+
+#exponential smoothing
+#fit model that had different types of trends you want to fit
+ets1 <- ets(ts1Train)
+#get predictions and prediction bounds with forecast function
+fcast <- forecast(ets1)
+plot(fcast); 
+lines(ts1Test,col="red")
+
+#get accuracy
+#accuracy(forecast,test set)
+accuracy(fcast,ts1Test)
 ```
+
