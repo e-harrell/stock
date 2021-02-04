@@ -1,10 +1,12 @@
-#data science project on stock prices for 5 companies: Amazon, Apple, CBS/Viacom, Disney & Netflix
-#from sept 22 to Dec 22
+#data science project forecasting stock prices for 5 companies: Amazon, Apple, CBS/Viacom, Disney & Netflix
+#from September 22 to December 22
 #attach libraries
 library(ggplot2)
 library(ggthemes)
 library(tidyr)
+library(quantmod)
 library(dplyr)
+library(forecast)
 #set up data folder
 if(!dir.exists("./data")) {dir.create("./data")}
 #download amazon data to data folder
@@ -102,3 +104,34 @@ ggplot(data,aes(Date, netflixHigh, group=1))+
   ggtitle("High stock prices for Netflix Sept 22-Dec 22")
 par(mfrow=c(1,1))
 
+#Forecasting on opening Amazon prices
+#ts function creates time series object
+ts1 <- ts(data$amazonOpen,frequency=32)
+#plot time series object(daily opening prices for Amazon)
+plot(ts1,xlab="Days+1", ylab="AMZN")
+plot(decompose(ts1),xlab="Days+1")
+
+#training & test sets-have to build sets with consecutive time points
+#window function creates training set that starts at time point 1 & ends at time point 5
+ts1Train <- window(ts1,start=1,end=1.7)
+#window function creates test set that starts at time point 5
+ts1Test <- window(ts1,start=1.8,end=2.97)
+ts1Train
+
+#simple moving average
+#plot training data (need forecast library to add 
+#moving average (ma function) to plot)
+plot(ts1Train)
+lines(ma(ts1Train,order=3),col="red")
+
+#exponential smoothing
+#fit model that had different types of trends you want to fit
+ets1 <- ets(ts1Train)
+#get predictions and prediction bounds with forecast function
+fcast <- forecast(ets1)
+plot(fcast); 
+lines(ts1Test,col="red")
+
+#get accuracy
+#accuracy(forcast,test set)
+accuracy(fcast,ts1Test)
