@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Summary
-### This project compares stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 22, 2020 to December 22,2020.
+### This project compares the high stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 22, 2020 to December 22,2020.
 
 
 ```{r libraries}
@@ -25,8 +25,9 @@ library(dplyr)
 library(forecast)
 ```
 
-## Loading Data-creating data folder, downloading datasets from Yahoo Finance and loading data into R Studio.
-```{r load, echo=FALSE}
+## Loading Data
+### Creating data folder, downloading datasets from Yahoo Finance and loading data into R Studio.
+```{r load}
 if(!dir.exists("./data")) {dir.create("./data")}
 download.file("https://query1.finance.yahoo.com/v7/finance/download/AMZN?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/amazon.csv")
 
@@ -98,7 +99,8 @@ str(data)
 ```
 
 ## Amazon forecasting analysis
-```{r amazon, echo=FALSE}
+### The line chart of the Amazon data with the associated regression line shows a a slight decrease in the high price over time. When the time series was decomposed, the trend showed a clear decrease.  The seasonal trend showed 2 period where there was a clear decrease in the high price. tEh plot of the forecasted data along with the observed dsata showed that the forecasted results did fall withint the 95% confidence level of the observed data. In terms of accuracy, the root mean squared erro was 61% for the training data and 65% for the testing data, showing that the model did not do well in predicting future high procies of the Amazon stock.
+```{r amazon}
 ggplot(data,aes(Date, amazonHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
   geom_smooth(method=lm,se=FALSE, colour="black")+
@@ -112,7 +114,7 @@ plot(decompose(ts1),xlab="Days+1")
 
 #training & test sets-have to build sets with consecutive time points
 ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 5
+#window function creates test set that starts at time point 1.8
 ts1Test <- window(ts1,start=1.8,end=2.97)
 #show test data
 ts1Train
@@ -151,7 +153,7 @@ plot(decompose(ts1),xlab="Days+1")
 
 #training & test sets-have to build sets with consecutive time points
 ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 5
+#window function creates test set that starts at time point 1.8
 ts1Test <- window(ts1,start=1.8,end=2.97)
 #show test data
 ts1Train
@@ -190,7 +192,7 @@ plot(decompose(ts1),xlab="Days+1")
 
 #training & test sets-have to build sets with consecutive time points
 ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 5
+#window function creates test set that starts at time point 1.8
 ts1Test <- window(ts1,start=1.8,end=2.97)
 #show test data
 ts1Train
@@ -229,7 +231,7 @@ plot(decompose(ts1),xlab="Days+1")
 
 #training & test sets-have to build sets with consecutive time points
 ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 5
+#window function creates test set that starts at time point 1.8
 ts1Test <- window(ts1,start=1.8,end=2.97)
 #show test data
 ts1Train
@@ -259,6 +261,7 @@ ggplot(data,aes(Date, netflixHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
   geom_smooth(method=lm,se=FALSE, colour="black")+
   ggtitle("High stock prices for Netflix Sept 22-Dec 22")
+
 #ts function creates time series object
 ts1 <- ts(data$netflixHigh,frequency=32)
 #plot time series object(daily high prices for Netflix)
@@ -267,7 +270,7 @@ plot(decompose(ts1),xlab="Days+1")
 
 #training & test sets-have to build sets with consecutive time points
 ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 5
+#window function creates test set that starts at time point 1.8
 ts1Test <- window(ts1,start=1.8,end=2.97)
 #show test data
 ts1Train
