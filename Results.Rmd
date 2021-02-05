@@ -100,7 +100,7 @@ str(data)
 ```
 
 ## Amazon forecasting analysis
-### The line chart of the Amazon data with the associated regression line shows a  slight decrease in the high price over time. When the time series was decomposed, the trend showed a clear decrease.  The seasonal trend showed 2 period where there was a clear decrease in the high price. tEh plot of the forecasted data along with the observed dsata showed that the forecasted results did fall withint the prediction bounds. In terms of accuracy, the root mean squared erro was 61% for the training data and 65% for the testing data, showing that the model did not do well in predicting future high procies of the Amazon stock.
+### The line chart of the Amazon data with the associated regression line shows a  slight decrease in the high price over time. When the time series was decomposed, the trend showed a clear decrease.  The seasonal trend showed 2 period where there was a clear decrease in the high price. The plot of the forecasted data along with the observed dsata showed that the forecasted results did fall withint the prediction bounds. In terms of accuracy, the root mean squared error was 61 for the training data and 65 for the test data. With a minimum value of  and a maximum value of  ,  .
 
 ```{r amazon}
 ggplot(data,aes(Date, amazonHigh, group=1))+
