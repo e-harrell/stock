@@ -10,8 +10,7 @@ output:
 
 
 ## Summary
-### This project compares the high stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 22, 2020 to December 22,2020.
-
+### This project compares the high stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 22, 2020 to December 22, 2020. It used the high prices for the first 24 days to forecast the high prices for the rest of the time period.
 
 
 ```r
@@ -85,6 +84,7 @@ library(forecast)
 ## Loading Data
 ### Creating data folder, downloading datasets from Yahoo Finance and loading data into R Studio.
 
+
 ```r
 if(!dir.exists("./data")) {dir.create("./data")}
 download.file("https://query1.finance.yahoo.com/v7/finance/download/AMZN?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/amazon.csv")
@@ -105,6 +105,7 @@ netflix<-read.csv("./data/netflix.csv")
 
 ## Data Wrangling
 ### Look at individual datasets, merge into a single dataset, and look at merged dataset.
+
 
 ```
 ##      Date                Open           High           Low           Close     
@@ -341,7 +342,8 @@ netflix<-read.csv("./data/netflix.csv")
 ```
 
 ## Amazon forecasting analysis
-### The line chart of the Amazon data with the associated regression line shows a a slight decrease in the high price over time. When the time series was decomposed, the trend showed a clear decrease.  The seasonal trend showed 2 period where there was a clear decrease in the high price. tEh plot of the forecasted data along with the observed dsata showed that the forecasted results did fall withint the 95% confidence level of the observed data. In terms of accuracy, the root mean squared erro was 61% for the training data and 65% for the testing data, showing that the model did not do well in predicting future high procies of the Amazon stock.
+### The line chart of the Amazon data with the associated regression line shows a  slight decrease in the high price over time. When the time series was decomposed, the trend showed a clear decrease.  The seasonal trend showed 2 period where there was a clear decrease in the high price. tEh plot of the forecasted data along with the observed dsata showed that the forecasted results did fall withint the prediction bounds. In terms of accuracy, the root mean squared erro was 61% for the training data and 65% for the testing data, showing that the model did not do well in predicting future high procies of the Amazon stock.
+
 
 ```r
 ggplot(data,aes(Date, amazonHigh, group=1))+
@@ -436,6 +438,7 @@ accuracy(fcast,ts1Test)
 
 ## Apple forecasting analysis
 
+
 ```r
 ggplot(data,aes(Date, appleHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
@@ -529,6 +532,7 @@ accuracy(fcast,ts1Test)
 
 ## CBS/Viacom forecasting analysis
 
+
 ```r
 ggplot(data,aes(Date, cbsHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
@@ -620,6 +624,7 @@ accuracy(fcast,ts1Test)
 ```
 
 ## Disney forecasting analysis
+
 
 ```r
 ggplot(data,aes(Date, disneyHigh, group=1))+
@@ -718,6 +723,7 @@ accuracy(fcast,ts1Test)
 ```
 
 ## Netflix forecasting analysis
+
 
 ```r
 ggplot(data,aes(Date, netflixHigh, group=1))+
