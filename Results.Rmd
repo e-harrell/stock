@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Summary
-### This project compares the high stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 22, 2020 to December 22, 2020. It used the high prices for the first 24 days to forecast the high prices for the rest of the time period.
+### This project compares the high stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 23, 2020 to November 17, 2020 when the New York Stock Exchange was open. For each stock, it used the high prices for the first 24 dates in the time period to predict the high prices for the next 16 dates.
 
 ```{r libraries}
 #attach libraries
@@ -29,15 +29,15 @@ library(forecast)
 
 ```{r load}
 if(!dir.exists("./data")) {dir.create("./data")}
-download.file("https://query1.finance.yahoo.com/v7/finance/download/AMZN?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/amazon.csv")
+download.file("https://query1.finance.yahoo.com/v7/finance/download/AMZN?period1=1600819200&period2=1605657600&interval=1d&events=history&includeAdjustedClose=true","./data/amazon.csv")
 
-download.file("https://query1.finance.yahoo.com/v7/finance/download/AAPL?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/apple.csv")
+download.file("https://query1.finance.yahoo.com/v7/finance/download/AAPL?period1=1600819200&period2=1605657600&interval=1d&events=history&includeAdjustedClose=truee","./data/apple.csv")
 
-download.file("https://query1.finance.yahoo.com/v7/finance/download/VIAC?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/cbs.csv")
+download.file("https://query1.finance.yahoo.com/v7/finance/download/VIAC?period1=1600819200&period2=1605657600&interval=1d&events=history&includeAdjustedClose=true","./data/cbs.csv")
 
-download.file("https://query1.finance.yahoo.com/v7/finance/download/DIS?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/disney.csv")
+download.file("https://query1.finance.yahoo.com/v7/finance/download/DIS?period1=1600819200&period2=1605657600&interval=1d&events=history&includeAdjustedClose=true","./data/disney.csv")
 
-download.file("https://query1.finance.yahoo.com/v7/finance/download/NFLX?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true", "./data/netflix.csv")
+download.file("https://query1.finance.yahoo.com/v7/finance/download/NFLX?period1=1600819200&period2=1605657600&interval=1d&events=history&includeAdjustedClose=true", "./data/netflix.csv")
 amazon<-read.csv("./data/amazon.csv")
 apple<-read.csv("./data/apple.csv")
 disney<-read.csv("./data/disney.csv")
@@ -46,7 +46,7 @@ netflix<-read.csv("./data/netflix.csv")
 ```
 
 ## Data Wrangling
-### Look at individual datasets, merge into a single dataset, and look at merged dataset.
+### Look at datasets. Merge into a single dataset and look at merged dataset.
 
 ```{r wrangle, echo=FALSE}
 #Details of individual data sets
@@ -61,7 +61,7 @@ str(disney)
 summary(netflix)
 str(netflix)
 
-#Rename variables in each dataset and combine into a single data set
+#combine into a single data set
 data<-cbind(data.frame(Date=as.Date(amazon$Date),
             amazonOpen=round(as.numeric(amazon$Open),2),
             amazonHigh=round(as.numeric(amazon$High),2),
@@ -94,39 +94,42 @@ data<-cbind(data.frame(Date=as.Date(amazon$Date),
             netflixyAdj.Close=round(as.numeric(netflix$Adj.Close),2),
             netflixVolume=round(as.numeric(netflix$Volume),0)
             ))
-#Details of combined dataset
+#look at combined dataset
 summary(data)
 str(data)
 ```
 
 ## Amazon forecasting analysis
-### The line chart of the Amazon data with the associated regression line shows a  slight decrease in the high price over time. When the time series was decomposed, the trend showed a clear decrease.  The seasonal trend showed 2 period where there was a clear decrease in the high price. The plot of the forecasted data along with the observed dsata showed that the forecasted results did fall withint the prediction bounds. In terms of accuracy, the root mean squared error was 61 for the training data and 65 for the test data. With a minimum value of  and a maximum value of  ,  .
+### The line chart of the data of the high stock prices for Amazon with the associated regression line shows a  slight decrease in the high price over time. 
 
 ```{r amazon}
 ggplot(data,aes(Date, amazonHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
   geom_smooth(method=lm,se=FALSE, colour="black")+
   ggtitle("High stock prices for Amazon Sept 22-Dec 22")
+```
 
+### The data was turned into a time series object in R with 40 observations, one for each day that the stock market was open during the time period. This time series object was decomposed. The decomposition showed that the trend had a general negative slope over time or a downtrend.  The seasonal trend showed 3 periods where there was a clear decrease in the high price.The graphed residuals and upa dn down pattern along with a sharp decrease at the end.
+
+```{r amatime}
 #ts function creates time series object
-ts1 <- ts(data$amazonHigh,frequency=32)
+ts1 <- ts(data$amazonHigh,frequency=10)
 #plot time series object(daily high prices for Amazon)
-plot(ts1,xlab="Days+1", ylab="AMZN")
-plot(decompose(ts1),xlab="Days+1")
+plot(ts1,xlab="Days*2", ylab="AMZN")
+plot(decompose(ts1),xlab="Days*2")
+```
 
-#training & test sets-have to build sets with consecutive time points
-ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 1.8
-ts1Test <- window(ts1,start=1.8,end=2.97)
-#show test data
-ts1Train
+### Training and test data sets were created from the time series object with the high stock prices for the first 24 days being put into the training data while the data for the remaining 16 days were put into the test data set.
 
-#simple moving average
-#plot training data 
-#moving average (ma function) to plot)
-plot(ts1Train)
-lines(ma(ts1Train,order=3),col="red")
+```{r amatrain}
+#training & test sets
+ts1Train <- window(ts1,start=1,end=3.3)
+ts1Test <- window(ts1,start=3.4,end=4.9)
+```
 
+### The plot of the forecasted data along with the observed data showed that the forecasted results did fall within the prediction bounds. 
+
+```{r amaforecast}
 #exponential smoothing
 #fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
@@ -134,7 +137,11 @@ ets1 <- ets(ts1Train)
 fcast <- forecast(ets1)
 plot(fcast); 
 lines(ts1Test,col="red")
+```
 
+### In terms of accuracy, the root mean squared error was 61 for the training data and 65 for the test data. With a minimum value of  and a maximum value of  ,  .
+
+```{r amaaccuracy}
 #get accuracy
 #accuracy(forecast,test set)
 accuracy(fcast,ts1Test)
@@ -149,23 +156,15 @@ ggplot(data,aes(Date, appleHigh, group=1))+
   ggtitle("High stock prices for Apple Sept 22-Dec 22")
 
 #ts function creates time series object
-ts1 <- ts(data$appleHigh,frequency=32)
+ts1 <- ts(data$appleHigh,frequency=10)
 #plot time series object(daily high prices for Apple)
 plot(ts1,xlab="Days+1", ylab="AAPL")
-plot(decompose(ts1),xlab="Days+1")
+plot(decompose(ts1),xlab="Days*2")
 
 #training & test sets-have to build sets with consecutive time points
-ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 1.8
-ts1Test <- window(ts1,start=1.8,end=2.97)
-#show test data
-ts1Train
-
-#simple moving average
-#plot training data 
-#moving average (ma function) to plot)
-plot(ts1Train)
-lines(ma(ts1Train,order=3),col="red")
+ts1Train <- window(ts1,start=1,end=3.3)
+#window function creates test set that starts at time point 2.16
+ts1Test <- window(ts1,start=3.4,end=4.9)
 
 #exponential smoothing
 #fit model that had different types of trends you want to fit
@@ -189,23 +188,14 @@ ggplot(data,aes(Date, cbsHigh, group=1))+
   ggtitle("High stock prices for CBS/Viacom Sept 22-Dec 22")
 
 #ts function creates time series object
-ts1 <- ts(data$cbsHigh,frequency=32)
+ts1 <- ts(data$cbsHigh,frequency=10)
 #plot time series object(daily high prices for CBS/Viacom)
-plot(ts1,xlab="Days+1", ylab="VIAC")
-plot(decompose(ts1),xlab="Days+1")
+plot(ts1,xlab="Days+*2", ylab="VIAC")
+plot(decompose(ts1),xlab="Days*2")
 
-#training & test sets-have to build sets with consecutive time points
-ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 1.8
-ts1Test <- window(ts1,start=1.8,end=2.97)
-#show test data
-ts1Train
-
-#simple moving average
-#plot training data 
-#moving average (ma function) to plot)
-plot(ts1Train)
-lines(ma(ts1Train,order=3),col="red")
+#training & test sets
+ts1Train <- window(ts1,start=1,end=3.3)
+ts1Test <- window(ts1,start=3.4,end=4.9)
 
 #exponential smoothing
 #fit model that had different types of trends you want to fit
@@ -229,23 +219,14 @@ ggplot(data,aes(Date, disneyHigh, group=1))+
   ggtitle("High stock prices for Disney Sept 22-Dec 22")
 
 #ts function creates time series object
-ts1 <- ts(data$disneyHigh,frequency=32)
+ts1 <- ts(data$disneyHigh,frequency=10)
 #plot time series object(daily high prices for Disney)
 plot(ts1,xlab="Days+1", ylab="DIS")
-plot(decompose(ts1),xlab="Days+1")
+plot(decompose(ts1),xlab="Days*2")
 
-#training & test sets-have to build sets with consecutive time points
-ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 1.8
-ts1Test <- window(ts1,start=1.8,end=2.97)
-#show test data
-ts1Train
-
-#simple moving average
-#plot training data 
-#moving average (ma function) to plot)
-plot(ts1Train)
-lines(ma(ts1Train,order=3),col="red")
+#training & test sets
+ts1Train <- window(ts1,start=1,end=3.3)
+ts1Test <- window(ts1,start=3.4,end=4.9)
 
 #exponential smoothing
 #fit model that had different types of trends you want to fit
@@ -269,23 +250,14 @@ ggplot(data,aes(Date, netflixHigh, group=1))+
   ggtitle("High stock prices for Netflix Sept 22-Dec 22")
 
 #ts function creates time series object
-ts1 <- ts(data$netflixHigh,frequency=32)
+ts1 <- ts(data$netflixHigh,frequency=10)
 #plot time series object(daily high prices for Netflix)
 plot(ts1,xlab="Days+1", ylab="NFLX")
-plot(decompose(ts1),xlab="Days+1")
+plot(decompose(ts1),xlab="Days*2")
 
-#training & test sets-have to build sets with consecutive time points
-ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 1.8
-ts1Test <- window(ts1,start=1.8,end=2.97)
-#show test data
-ts1Train
-
-#simple moving average
-#plot training data 
-#moving average (ma function) to plot)
-plot(ts1Train)
-lines(ma(ts1Train,order=3),col="red")
+#training & test sets
+ts1Train <- window(ts1,start=1,end=3.3)
+ts1Test <- window(ts1,start=3.4,end=4.9)
 
 #exponential smoothing
 #fit model that had different types of trends you want to fit
