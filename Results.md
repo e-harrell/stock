@@ -10,7 +10,7 @@ output:
 
 
 ## Summary
-### This project compares the high stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 22, 2020 to December 22, 2020. It used the high prices for the first 24 days to forecast the high prices for the rest of the time period.
+### This project compares the high stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 23, 2020 to November 17, 2020 when the New York Stock Exchange was open. For each stock, it used the high prices for the first 24 dates in the time period to predict the high prices for the next 16 dates.
 
 
 ```r
@@ -87,15 +87,15 @@ library(forecast)
 
 ```r
 if(!dir.exists("./data")) {dir.create("./data")}
-download.file("https://query1.finance.yahoo.com/v7/finance/download/AMZN?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/amazon.csv")
+download.file("https://query1.finance.yahoo.com/v7/finance/download/AMZN?period1=1600819200&period2=1605657600&interval=1d&events=history&includeAdjustedClose=true","./data/amazon.csv")
 
-download.file("https://query1.finance.yahoo.com/v7/finance/download/AAPL?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/apple.csv")
+download.file("https://query1.finance.yahoo.com/v7/finance/download/AAPL?period1=1600819200&period2=1605657600&interval=1d&events=history&includeAdjustedClose=truee","./data/apple.csv")
 
-download.file("https://query1.finance.yahoo.com/v7/finance/download/VIAC?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/cbs.csv")
+download.file("https://query1.finance.yahoo.com/v7/finance/download/VIAC?period1=1600819200&period2=1605657600&interval=1d&events=history&includeAdjustedClose=true","./data/cbs.csv")
 
-download.file("https://query1.finance.yahoo.com/v7/finance/download/DIS?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true","./data/disney.csv")
+download.file("https://query1.finance.yahoo.com/v7/finance/download/DIS?period1=1600819200&period2=1605657600&interval=1d&events=history&includeAdjustedClose=true","./data/disney.csv")
 
-download.file("https://query1.finance.yahoo.com/v7/finance/download/NFLX?period1=1600819200&period2=1608681600&interval=1d&events=history&includeAdjustedClose=true", "./data/netflix.csv")
+download.file("https://query1.finance.yahoo.com/v7/finance/download/NFLX?period1=1600819200&period2=1605657600&interval=1d&events=history&includeAdjustedClose=true", "./data/netflix.csv")
 amazon<-read.csv("./data/amazon.csv")
 apple<-read.csv("./data/apple.csv")
 disney<-read.csv("./data/disney.csv")
@@ -104,28 +104,28 @@ netflix<-read.csv("./data/netflix.csv")
 ```
 
 ## Data Wrangling
-### Look at individual datasets, merge into a single dataset, and look at merged dataset.
+### Look at datasets. Merge into a single dataset and look at merged dataset.
 
 
 ```
 ##      Date                Open           High           Low           Close     
-##  Length:64          Min.   :2978   Min.   :3069   Min.   :2950   Min.   :3000  
-##  Class :character   1st Qu.:3135   1st Qu.:3161   1st Qu.:3088   1st Qu.:3118  
-##  Mode  :character   Median :3179   Median :3201   Median :3137   Median :3175  
-##                     Mean   :3184   Mean   :3219   Mean   :3138   Mean   :3177  
-##                     3rd Qu.:3215   3rd Qu.:3251   3rd Qu.:3172   3rd Qu.:3208  
+##  Length:40          Min.   :2978   Min.   :3069   Min.   :2950   Min.   :3000  
+##  Class :character   1st Qu.:3140   1st Qu.:3173   1st Qu.:3086   1st Qu.:3128  
+##  Mode  :character   Median :3187   Median :3209   Median :3137   Median :3181  
+##                     Mean   :3193   Mean   :3235   Mean   :3140   Mean   :3185  
+##                     3rd Qu.:3226   3rd Qu.:3289   3rd Qu.:3179   3rd Qu.:3226  
 ##                     Max.   :3468   Max.   :3496   Max.   :3424   Max.   :3444  
 ##    Adj.Close        Volume       
-##  Min.   :3000   Min.   :2369400  
-##  1st Qu.:3118   1st Qu.:3472400  
-##  Median :3175   Median :4364450  
-##  Mean   :3177   Mean   :4574408  
-##  3rd Qu.:3208   3rd Qu.:5544125  
+##  Min.   :3000   Min.   :3174100  
+##  1st Qu.:3128   1st Qu.:4304800  
+##  Median :3181   Median :4939900  
+##  Mean   :3185   Mean   :5190162  
+##  3rd Qu.:3226   3rd Qu.:5799200  
 ##  Max.   :3444   Max.   :8386400
 ```
 
 ```
-## 'data.frame':	64 obs. of  7 variables:
+## 'data.frame':	40 obs. of  7 variables:
 ##  $ Date     : chr  "2020-09-23" "2020-09-24" "2020-09-25" "2020-09-28" ...
 ##  $ Open     : num  3120 2978 3055 3149 3175 ...
 ##  $ High     : num  3127 3069 3102 3175 3188 ...
@@ -137,23 +137,23 @@ netflix<-read.csv("./data/netflix.csv")
 
 ```
 ##      Date                Open            High            Low       
-##  Length:64          Min.   :105.2   Min.   :110.2   Min.   :105.0  
-##  Class :character   1st Qu.:115.0   1st Qu.:116.5   1st Qu.:113.6  
-##  Mode  :character   Median :117.6   Median :119.1   Median :116.3  
-##                     Mean   :118.2   Mean   :119.8   Mean   :116.7  
-##                     3rd Qu.:121.1   3rd Qu.:123.1   3rd Qu.:119.7  
-##                     Max.   :131.6   Max.   :134.4   Max.   :129.6  
+##  Length:40          Min.   :105.2   Min.   :110.2   Min.   :105.0  
+##  Class :character   1st Qu.:114.0   1st Qu.:115.5   1st Qu.:112.3  
+##  Mode  :character   Median :116.0   Median :117.3   Median :114.6  
+##                     Mean   :115.9   Mean   :117.6   Mean   :114.2  
+##                     3rd Qu.:118.8   3rd Qu.:119.9   3rd Qu.:116.6  
+##                     Max.   :125.3   Max.   :125.4   Max.   :119.7  
 ##      Close         Adj.Close         Volume         
-##  Min.   :107.1   Min.   :106.9   Min.   : 46691300  
-##  1st Qu.:115.1   1st Qu.:114.9   1st Qu.: 88488100  
-##  Median :117.4   Median :117.3   Median :113216700  
-##  Mean   :118.3   Mean   :118.2   Mean   :118827627  
-##  3rd Qu.:121.8   3rd Qu.:121.8   3rd Qu.:142990850  
-##  Max.   :131.9   Max.   :131.9   Max.   :262330500
+##  Min.   :107.1   Min.   :106.8   Min.   : 74271000  
+##  1st Qu.:114.7   1st Qu.:114.4   1st Qu.:101617725  
+##  Median :116.0   Median :115.7   Median :118379850  
+##  Mean   :115.9   Mean   :115.6   Mean   :127694842  
+##  3rd Qu.:119.0   3rd Qu.:118.6   3rd Qu.:145066300  
+##  Max.   :124.4   Max.   :124.0   Max.   :262330500
 ```
 
 ```
-## 'data.frame':	64 obs. of  7 variables:
+## 'data.frame':	40 obs. of  7 variables:
 ##  $ Date     : chr  "2020-09-23" "2020-09-24" "2020-09-25" "2020-09-28" ...
 ##  $ Open     : num  112 105 108 115 115 ...
 ##  $ High     : num  112 110 112 115 115 ...
@@ -165,23 +165,23 @@ netflix<-read.csv("./data/netflix.csv")
 
 ```
 ##      Date                Open            High            Low       
-##  Length:64          Min.   :27.15   Min.   :27.77   Min.   :26.99  
-##  Class :character   1st Qu.:28.68   1st Qu.:29.07   1st Qu.:28.23  
-##  Mode  :character   Median :29.98   Median :30.32   Median :29.21  
-##                     Mean   :31.28   Mean   :31.83   Mean   :30.79  
-##                     3rd Qu.:34.80   3rd Qu.:35.31   3rd Qu.:34.24  
-##                     Max.   :36.80   Max.   :37.32   Max.   :36.46  
+##  Length:40          Min.   :27.15   Min.   :27.77   Min.   :26.99  
+##  Class :character   1st Qu.:28.07   1st Qu.:28.52   1st Qu.:27.50  
+##  Mode  :character   Median :28.85   Median :29.50   Median :28.52  
+##                     Mean   :28.94   Mean   :29.49   Mean   :28.42  
+##                     3rd Qu.:29.79   3rd Qu.:30.11   3rd Qu.:28.90  
+##                     Max.   :31.60   Max.   :32.89   Max.   :30.99  
 ##      Close         Adj.Close         Volume        
-##  Min.   :27.13   Min.   :26.95   Min.   : 3903900  
-##  1st Qu.:28.55   1st Qu.:28.35   1st Qu.: 8622475  
-##  Median :29.80   Median :29.60   Median : 9489900  
-##  Mean   :31.37   Mean   :31.19   Mean   :11025794  
-##  3rd Qu.:34.86   3rd Qu.:34.84   3rd Qu.:12624750  
-##  Max.   :36.95   Max.   :36.70   Max.   :26843600
+##  Min.   :27.13   Min.   :26.95   Min.   : 4870500  
+##  1st Qu.:28.10   1st Qu.:27.91   1st Qu.: 7796575  
+##  Median :28.89   Median :28.69   Median : 9282400  
+##  Mean   :28.98   Mean   :28.78   Mean   :10299750  
+##  3rd Qu.:29.60   3rd Qu.:29.40   3rd Qu.:11809500  
+##  Max.   :32.29   Max.   :32.07   Max.   :26843600
 ```
 
 ```
-## 'data.frame':	64 obs. of  7 variables:
+## 'data.frame':	40 obs. of  7 variables:
 ##  $ Date     : chr  "2020-09-23" "2020-09-24" "2020-09-25" "2020-09-28" ...
 ##  $ Open     : num  29.7 28.6 28.9 30 29.6 ...
 ##  $ High     : num  30 29.5 29.6 30.2 29.9 ...
@@ -193,23 +193,23 @@ netflix<-read.csv("./data/netflix.csv")
 
 ```
 ##      Date                Open            High            Low       
-##  Length:64          Min.   :118.2   Min.   :121.5   Min.   :117.2  
-##  Class :character   1st Qu.:124.3   1st Qu.:125.7   1st Qu.:123.2  
-##  Mode  :character   Median :129.5   Median :130.4   Median :127.1  
-##                     Mean   :138.4   Mean   :140.2   Mean   :136.7  
-##                     3rd Qu.:149.5   3rd Qu.:151.5   3rd Qu.:148.0  
-##                     Max.   :174.0   Max.   :179.4   Max.   :172.3  
+##  Length:40          Min.   :118.2   Min.   :121.5   Min.   :117.2  
+##  Class :character   1st Qu.:123.2   1st Qu.:124.2   1st Qu.:122.2  
+##  Mode  :character   Median :125.0   Median :126.9   Median :123.7  
+##                     Mean   :127.3   Mean   :128.8   Mean   :125.6  
+##                     3rd Qu.:127.9   3rd Qu.:128.5   3rd Qu.:126.1  
+##                     Max.   :144.4   Max.   :147.7   Max.   :142.6  
 ##      Close         Adj.Close         Volume        
 ##  Min.   :118.5   Min.   :118.5   Min.   : 5177700  
-##  1st Qu.:124.1   1st Qu.:124.1   1st Qu.: 7266400  
-##  Median :128.7   Median :128.7   Median : 8998900  
-##  Mean   :138.5   Mean   :138.5   Mean   :11765898  
-##  3rd Qu.:150.0   3rd Qu.:150.0   3rd Qu.:11443700  
-##  Max.   :175.7   Max.   :175.7   Max.   :87410700
+##  1st Qu.:123.3   1st Qu.:123.3   1st Qu.: 6758225  
+##  Median :125.0   Median :125.0   Median : 8401800  
+##  Mean   :127.3   Mean   :127.3   Mean   :10167175  
+##  3rd Qu.:127.5   3rd Qu.:127.5   3rd Qu.:11094200  
+##  Max.   :144.7   Max.   :144.7   Max.   :35634700
 ```
 
 ```
-## 'data.frame':	64 obs. of  7 variables:
+## 'data.frame':	40 obs. of  7 variables:
 ##  $ Date     : chr  "2020-09-23" "2020-09-24" "2020-09-25" "2020-09-28" ...
 ##  $ Open     : num  127 122 121 126 126 ...
 ##  $ High     : num  127 124 124 127 126 ...
@@ -221,23 +221,23 @@ netflix<-read.csv("./data/netflix.csv")
 
 ```
 ##      Date                Open            High            Low       
-##  Length:64          Min.   :470.5   Min.   :477.0   Min.   :463.4  
-##  Class :character   1st Qu.:486.7   1st Qu.:491.9   1st Qu.:478.9  
-##  Mode  :character   Median :495.2   Median :506.3   Median :491.6  
-##                     Mean   :503.3   Mean   :510.8   Mean   :495.6  
-##                     3rd Qu.:518.1   3rd Qu.:526.6   3rd Qu.:507.6  
+##  Length:40          Min.   :470.5   Min.   :477.0   Min.   :463.4  
+##  Class :character   1st Qu.:486.7   1st Qu.:491.5   1st Qu.:478.2  
+##  Mode  :character   Median :493.6   Median :505.3   Median :484.9  
+##                     Mean   :503.8   Mean   :511.8   Mean   :495.0  
+##                     3rd Qu.:518.2   3rd Qu.:530.6   3rd Qu.:507.1  
 ##                     Max.   :562.6   Max.   :572.5   Max.   :541.0  
 ##      Close         Adj.Close         Volume        
-##  Min.   :470.5   Min.   :470.5   Min.   : 1906600  
-##  1st Qu.:486.0   1st Qu.:486.0   1st Qu.: 3656950  
-##  Median :497.9   Median :497.9   Median : 4348750  
-##  Mean   :503.3   Mean   :503.3   Mean   : 5158317  
-##  3rd Qu.:523.0   3rd Qu.:523.0   3rd Qu.: 5644475  
+##  Min.   :470.5   Min.   :470.5   Min.   : 3002700  
+##  1st Qu.:485.0   1st Qu.:485.0   1st Qu.: 4171275  
+##  Median :492.1   Median :492.1   Median : 5255050  
+##  Mean   :502.8   Mean   :502.8   Mean   : 6030870  
+##  3rd Qu.:525.9   3rd Qu.:525.9   3rd Qu.: 7140300  
 ##  Max.   :554.1   Max.   :554.1   Max.   :17405700
 ```
 
 ```
-## 'data.frame':	64 obs. of  7 variables:
+## 'data.frame':	40 obs. of  7 variables:
 ##  $ Date     : chr  "2020-09-23" "2020-09-24" "2020-09-25" "2020-09-28" ...
 ##  $ Open     : num  491 471 474 489 490 ...
 ##  $ High     : num  491 477 485 492 496 ...
@@ -250,64 +250,64 @@ netflix<-read.csv("./data/netflix.csv")
 ```
 ##       Date              amazonOpen     amazonHigh     amazonLow   
 ##  Min.   :2020-09-23   Min.   :2978   Min.   :3069   Min.   :2950  
-##  1st Qu.:2020-10-14   1st Qu.:3135   1st Qu.:3161   1st Qu.:3088  
-##  Median :2020-11-05   Median :3179   Median :3201   Median :3137  
-##  Mean   :2020-11-06   Mean   :3184   Mean   :3219   Mean   :3138  
-##  3rd Qu.:2020-11-30   3rd Qu.:3215   3rd Qu.:3251   3rd Qu.:3172  
-##  Max.   :2020-12-22   Max.   :3468   Max.   :3496   Max.   :3424  
+##  1st Qu.:2020-10-06   1st Qu.:3140   1st Qu.:3173   1st Qu.:3086  
+##  Median :2020-10-20   Median :3187   Median :3209   Median :3137  
+##  Mean   :2020-10-20   Mean   :3193   Mean   :3235   Mean   :3140  
+##  3rd Qu.:2020-11-03   3rd Qu.:3226   3rd Qu.:3289   3rd Qu.:3179  
+##  Max.   :2020-11-17   Max.   :3468   Max.   :3496   Max.   :3424  
 ##   amazonClose   amazonAdj.Close  amazonVolume       appleOpen    
-##  Min.   :3000   Min.   :3000    Min.   :2369400   Min.   :105.2  
-##  1st Qu.:3118   1st Qu.:3118    1st Qu.:3472400   1st Qu.:115.0  
-##  Median :3175   Median :3175    Median :4364450   Median :117.6  
-##  Mean   :3177   Mean   :3177    Mean   :4574408   Mean   :118.2  
-##  3rd Qu.:3208   3rd Qu.:3208    3rd Qu.:5544125   3rd Qu.:121.1  
-##  Max.   :3444   Max.   :3444    Max.   :8386400   Max.   :131.6  
+##  Min.   :3000   Min.   :3000    Min.   :3174100   Min.   :105.2  
+##  1st Qu.:3128   1st Qu.:3128    1st Qu.:4304800   1st Qu.:114.0  
+##  Median :3181   Median :3181    Median :4939900   Median :116.0  
+##  Mean   :3185   Mean   :3185    Mean   :5190162   Mean   :115.9  
+##  3rd Qu.:3226   3rd Qu.:3226    3rd Qu.:5799200   3rd Qu.:118.8  
+##  Max.   :3444   Max.   :3444    Max.   :8386400   Max.   :125.3  
 ##    appleHigh        appleLow       appleClose    appleAdj.Close 
-##  Min.   :110.2   Min.   :105.0   Min.   :107.1   Min.   :106.9  
-##  1st Qu.:116.5   1st Qu.:113.6   1st Qu.:115.1   1st Qu.:114.9  
-##  Median :119.1   Median :116.3   Median :117.4   Median :117.3  
-##  Mean   :119.8   Mean   :116.7   Mean   :118.3   Mean   :118.2  
-##  3rd Qu.:123.1   3rd Qu.:119.7   3rd Qu.:121.8   3rd Qu.:121.8  
-##  Max.   :134.4   Max.   :129.7   Max.   :131.9   Max.   :131.9  
+##  Min.   :110.2   Min.   :105.0   Min.   :107.1   Min.   :106.8  
+##  1st Qu.:115.5   1st Qu.:112.3   1st Qu.:114.7   1st Qu.:114.4  
+##  Median :117.3   Median :114.6   Median :116.0   Median :115.7  
+##  Mean   :117.6   Mean   :114.2   Mean   :115.9   Mean   :115.6  
+##  3rd Qu.:119.9   3rd Qu.:116.6   3rd Qu.:119.0   3rd Qu.:118.6  
+##  Max.   :125.4   Max.   :119.7   Max.   :124.4   Max.   :124.0  
 ##   appleVolume           cbsOpen         cbsHigh          cbsLow     
-##  Min.   : 46691300   Min.   :27.15   Min.   :27.77   Min.   :26.99  
-##  1st Qu.: 88488100   1st Qu.:28.68   1st Qu.:29.07   1st Qu.:28.23  
-##  Median :113216700   Median :29.98   Median :30.32   Median :29.21  
-##  Mean   :118827627   Mean   :31.28   Mean   :31.83   Mean   :30.79  
-##  3rd Qu.:142990850   3rd Qu.:34.80   3rd Qu.:35.31   3rd Qu.:34.24  
-##  Max.   :262330500   Max.   :36.80   Max.   :37.32   Max.   :36.46  
+##  Min.   : 74271000   Min.   :27.15   Min.   :27.77   Min.   :26.99  
+##  1st Qu.:101617725   1st Qu.:28.07   1st Qu.:28.52   1st Qu.:27.50  
+##  Median :118379850   Median :28.84   Median :29.50   Median :28.52  
+##  Mean   :127694842   Mean   :28.94   Mean   :29.49   Mean   :28.42  
+##  3rd Qu.:145066300   3rd Qu.:29.79   3rd Qu.:30.11   3rd Qu.:28.90  
+##  Max.   :262330500   Max.   :31.60   Max.   :32.89   Max.   :30.99  
 ##     cbsClose      cbsAdj.Close     cbsVolume          disneyOpen   
-##  Min.   :27.13   Min.   :26.95   Min.   : 3903900   Min.   :118.2  
-##  1st Qu.:28.55   1st Qu.:28.36   1st Qu.: 8622475   1st Qu.:124.3  
-##  Median :29.80   Median :29.61   Median : 9489900   Median :129.5  
-##  Mean   :31.37   Mean   :31.19   Mean   :11025794   Mean   :138.4  
-##  3rd Qu.:34.86   3rd Qu.:34.84   3rd Qu.:12624750   3rd Qu.:149.5  
-##  Max.   :36.95   Max.   :36.70   Max.   :26843600   Max.   :174.0  
+##  Min.   :27.13   Min.   :26.95   Min.   : 4870500   Min.   :118.2  
+##  1st Qu.:28.10   1st Qu.:27.91   1st Qu.: 7796575   1st Qu.:123.2  
+##  Median :28.89   Median :28.70   Median : 9282400   Median :125.0  
+##  Mean   :28.98   Mean   :28.78   Mean   :10299750   Mean   :127.3  
+##  3rd Qu.:29.60   3rd Qu.:29.40   3rd Qu.:11809500   3rd Qu.:127.9  
+##  Max.   :32.29   Max.   :32.07   Max.   :26843600   Max.   :144.4  
 ##    disneyHigh      disneyLow      disneyClose    disneyAdj.Close
 ##  Min.   :121.5   Min.   :117.2   Min.   :118.5   Min.   :118.5  
-##  1st Qu.:125.7   1st Qu.:123.2   1st Qu.:124.1   1st Qu.:124.1  
-##  Median :130.4   Median :127.1   Median :128.7   Median :128.7  
-##  Mean   :140.2   Mean   :136.7   Mean   :138.5   Mean   :138.5  
-##  3rd Qu.:151.5   3rd Qu.:148.0   3rd Qu.:150.0   3rd Qu.:150.0  
-##  Max.   :179.4   Max.   :172.3   Max.   :175.7   Max.   :175.7  
+##  1st Qu.:124.2   1st Qu.:122.2   1st Qu.:123.3   1st Qu.:123.3  
+##  Median :126.9   Median :123.7   Median :125.0   Median :125.0  
+##  Mean   :128.8   Mean   :125.6   Mean   :127.3   Mean   :127.3  
+##  3rd Qu.:128.5   3rd Qu.:126.1   3rd Qu.:127.5   3rd Qu.:127.5  
+##  Max.   :147.7   Max.   :142.6   Max.   :144.7   Max.   :144.7  
 ##   disneyVolume       netflixOpen     netflixHigh      netflixLow   
 ##  Min.   : 5177700   Min.   :470.5   Min.   :477.0   Min.   :463.4  
-##  1st Qu.: 7266400   1st Qu.:486.7   1st Qu.:491.9   1st Qu.:478.9  
-##  Median : 8998900   Median :495.2   Median :506.3   Median :491.6  
-##  Mean   :11765898   Mean   :503.3   Mean   :510.8   Mean   :495.6  
-##  3rd Qu.:11443700   3rd Qu.:518.1   3rd Qu.:526.6   3rd Qu.:507.6  
-##  Max.   :87410700   Max.   :562.6   Max.   :572.5   Max.   :541.0  
+##  1st Qu.: 6758225   1st Qu.:486.7   1st Qu.:491.5   1st Qu.:478.2  
+##  Median : 8401800   Median :493.6   Median :505.3   Median :484.9  
+##  Mean   :10167175   Mean   :503.8   Mean   :511.8   Mean   :495.0  
+##  3rd Qu.:11094200   3rd Qu.:518.2   3rd Qu.:530.6   3rd Qu.:507.1  
+##  Max.   :35634700   Max.   :562.6   Max.   :572.5   Max.   :541.0  
 ##   netflixClose   netflixyAdj.Close netflixVolume     
-##  Min.   :470.5   Min.   :470.5     Min.   : 1906600  
-##  1st Qu.:486.0   1st Qu.:486.0     1st Qu.: 3656950  
-##  Median :497.9   Median :497.9     Median : 4348750  
-##  Mean   :503.3   Mean   :503.3     Mean   : 5158317  
-##  3rd Qu.:523.0   3rd Qu.:523.0     3rd Qu.: 5644475  
+##  Min.   :470.5   Min.   :470.5     Min.   : 3002700  
+##  1st Qu.:485.0   1st Qu.:485.0     1st Qu.: 4171275  
+##  Median :492.1   Median :492.1     Median : 5255050  
+##  Mean   :502.8   Mean   :502.8     Mean   : 6030870  
+##  3rd Qu.:525.9   3rd Qu.:525.9     3rd Qu.: 7140300  
 ##  Max.   :554.1   Max.   :554.1     Max.   :17405700
 ```
 
 ```
-## 'data.frame':	64 obs. of  31 variables:
+## 'data.frame':	40 obs. of  31 variables:
 ##  $ Date             : Date, format: "2020-09-23" "2020-09-24" ...
 ##  $ amazonOpen       : num  3120 2978 3055 3149 3175 ...
 ##  $ amazonHigh       : num  3127 3069 3102 3175 3188 ...
@@ -342,7 +342,7 @@ netflix<-read.csv("./data/netflix.csv")
 ```
 
 ## Amazon forecasting analysis
-### The line chart of the Amazon data with the associated regression line shows a  slight decrease in the high price over time. When the time series was decomposed, the trend showed a clear decrease.  The seasonal trend showed 2 period where there was a clear decrease in the high price. The plot of the forecasted data along with the observed dsata showed that the forecasted results did fall withint the prediction bounds. In terms of accuracy, the root mean squared error was 61 for the training data and 65 for the test data. With a minimum value of  and a maximum value of  ,  .
+### The line chart of the data of the high stock prices for Amazon with the associated regression line shows a  slight decrease in the high price over time. 
 
 
 ```r
@@ -358,56 +358,35 @@ ggplot(data,aes(Date, amazonHigh, group=1))+
 
 ![](Results_files/figure-html/amazon-1.png)<!-- -->
 
+### The data was turned into a time series object in R with 40 observations, one for each day that the stock market was open during the time period. This time series object was decomposed. The decomposition showed that the trend had a general negative slope over time or a downtrend.  The seasonal trend showed 3 periods where there was a clear decrease in the high price.The graphed residuals and upa dn down pattern along with a sharp decrease at the end.
+
+
 ```r
 #ts function creates time series object
-ts1 <- ts(data$amazonHigh,frequency=32)
+ts1 <- ts(data$amazonHigh,frequency=10)
 #plot time series object(daily high prices for Amazon)
-plot(ts1,xlab="Days+1", ylab="AMZN")
+plot(ts1,xlab="Days*2", ylab="AMZN")
 ```
 
-![](Results_files/figure-html/amazon-2.png)<!-- -->
-
-```r
-plot(decompose(ts1),xlab="Days+1")
-```
-
-![](Results_files/figure-html/amazon-3.png)<!-- -->
+![](Results_files/figure-html/amatime-1.png)<!-- -->
 
 ```r
-#training & test sets-have to build sets with consecutive time points
-ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 1.8
-ts1Test <- window(ts1,start=1.8,end=2.97)
+plot(decompose(ts1),xlab="Days*2")
 ```
 
-```
-## Warning in window.default(x, ...): 'end' value not changed
-```
+![](Results_files/figure-html/amatime-2.png)<!-- -->
+
+### Training and test data sets were created from the time series object with the high stock prices for the first 24 days being put into the training data while the data for the remaining 16 days were put into the test data set.
+
 
 ```r
-#show test data
-ts1Train
+#training & test sets
+ts1Train <- window(ts1,start=1,end=3.3)
+ts1Test <- window(ts1,start=3.4,end=4.9)
 ```
 
-```
-## Time Series:
-## Start = c(1, 1) 
-## End = c(1, 23) 
-## Frequency = 32 
-##  [1] 3127.00 3069.30 3101.54 3175.04 3188.26 3212.88 3224.00 3195.80 3202.53
-## [10] 3182.00 3200.00 3233.29 3288.99 3496.24 3492.38 3464.88 3355.88 3399.66
-## [19] 3329.00 3266.00 3233.88 3198.75 3205.33
-```
+### The plot of the forecasted data along with the observed data showed that the forecasted results did fall within the prediction bounds. 
 
-```r
-#simple moving average
-#plot training data 
-#moving average (ma function) to plot)
-plot(ts1Train)
-lines(ma(ts1Train,order=3),col="red")
-```
-
-![](Results_files/figure-html/amazon-4.png)<!-- -->
 
 ```r
 #exponential smoothing
@@ -419,7 +398,10 @@ plot(fcast);
 lines(ts1Test,col="red")
 ```
 
-![](Results_files/figure-html/amazon-5.png)<!-- -->
+![](Results_files/figure-html/amaforecast-1.png)<!-- -->
+
+### In terms of accuracy, the root mean squared error was 61 for the training data and 65 for the test data. With a minimum value of  and a maximum value of  ,  .
+
 
 ```r
 #get accuracy
@@ -428,12 +410,12 @@ accuracy(fcast,ts1Test)
 ```
 
 ```
-##                      ME     RMSE      MAE        MPE     MAPE MASE      ACF1
-## Training set   3.487367 60.88887 42.41716  0.0936610 1.285188  NaN 0.1943240
-## Test set     -12.844079 64.49879 53.00355 -0.4413693 1.663304  NaN 0.5909089
-##              Theil's U
-## Training set        NA
-## Test set      1.140216
+##                      ME      RMSE      MAE        MPE     MAPE      MASE
+## Training set   6.577504  61.67829 43.88522  0.1883105 1.330191 0.2775902
+## Test set     -79.229107 116.80991 96.42549 -2.5462514 3.060235 0.6099267
+##                   ACF1 Theil's U
+## Training set 0.1853532        NA
+## Test set     0.5447402  1.498007
 ```
 
 ## Apple forecasting analysis
@@ -454,7 +436,7 @@ ggplot(data,aes(Date, appleHigh, group=1))+
 
 ```r
 #ts function creates time series object
-ts1 <- ts(data$appleHigh,frequency=32)
+ts1 <- ts(data$appleHigh,frequency=10)
 #plot time series object(daily high prices for Apple)
 plot(ts1,xlab="Days+1", ylab="AAPL")
 ```
@@ -462,48 +444,17 @@ plot(ts1,xlab="Days+1", ylab="AAPL")
 ![](Results_files/figure-html/apple-2.png)<!-- -->
 
 ```r
-plot(decompose(ts1),xlab="Days+1")
+plot(decompose(ts1),xlab="Days*2")
 ```
 
 ![](Results_files/figure-html/apple-3.png)<!-- -->
 
 ```r
 #training & test sets-have to build sets with consecutive time points
-ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 1.8
-ts1Test <- window(ts1,start=1.8,end=2.97)
-```
+ts1Train <- window(ts1,start=1,end=3.3)
+#window function creates test set that starts at time point 2.16
+ts1Test <- window(ts1,start=3.4,end=4.9)
 
-```
-## Warning in window.default(x, ...): 'end' value not changed
-```
-
-```r
-#show test data
-ts1Train
-```
-
-```
-## Time Series:
-## Start = c(1, 1) 
-## End = c(1, 23) 
-## Frequency = 32 
-##  [1] 112.11 110.25 112.44 115.32 115.31 117.26 117.72 115.37 116.65 116.12
-## [11] 115.55 116.40 117.00 125.18 125.39 123.03 121.20 121.55 120.42 118.98
-## [21] 118.71 118.04 116.55
-```
-
-```r
-#simple moving average
-#plot training data 
-#moving average (ma function) to plot)
-plot(ts1Train)
-lines(ma(ts1Train,order=3),col="red")
-```
-
-![](Results_files/figure-html/apple-4.png)<!-- -->
-
-```r
 #exponential smoothing
 #fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
@@ -513,7 +464,7 @@ plot(fcast);
 lines(ts1Test,col="red")
 ```
 
-![](Results_files/figure-html/apple-5.png)<!-- -->
+![](Results_files/figure-html/apple-4.png)<!-- -->
 
 ```r
 #get accuracy
@@ -522,12 +473,12 @@ accuracy(fcast,ts1Test)
 ```
 
 ```
-##                     ME     RMSE      MAE       MPE     MAPE MASE       ACF1
-## Training set 0.1931471 2.201834 1.454897 0.1521136 1.224527  NaN 0.09104844
-## Test set     4.7532719 6.970746 5.655943 3.7490213 4.556879  NaN 0.80636641
-##              Theil's U
-## Training set        NA
-## Test set      2.985829
+##                     ME     RMSE      MAE       MPE     MAPE      MASE
+## Training set 0.1850931 2.155474 1.394282 0.1457702 1.173510 0.2787370
+## Test set     0.9050000 3.558258 3.101250 0.6833750 2.647713 0.6199843
+##                    ACF1 Theil's U
+## Training set 0.09397187        NA
+## Test set     0.70776444  1.422214
 ```
 
 ## CBS/Viacom forecasting analysis
@@ -548,55 +499,24 @@ ggplot(data,aes(Date, cbsHigh, group=1))+
 
 ```r
 #ts function creates time series object
-ts1 <- ts(data$cbsHigh,frequency=32)
+ts1 <- ts(data$cbsHigh,frequency=10)
 #plot time series object(daily high prices for CBS/Viacom)
-plot(ts1,xlab="Days+1", ylab="VIAC")
+plot(ts1,xlab="Days+*2", ylab="VIAC")
 ```
 
 ![](Results_files/figure-html/cbs-2.png)<!-- -->
 
 ```r
-plot(decompose(ts1),xlab="Days+1")
+plot(decompose(ts1),xlab="Days*2")
 ```
 
 ![](Results_files/figure-html/cbs-3.png)<!-- -->
 
 ```r
-#training & test sets-have to build sets with consecutive time points
-ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 1.8
-ts1Test <- window(ts1,start=1.8,end=2.97)
-```
+#training & test sets
+ts1Train <- window(ts1,start=1,end=3.3)
+ts1Test <- window(ts1,start=3.4,end=4.9)
 
-```
-## Warning in window.default(x, ...): 'end' value not changed
-```
-
-```r
-#show test data
-ts1Train
-```
-
-```
-## Time Series:
-## Start = c(1, 1) 
-## End = c(1, 23) 
-## Frequency = 32 
-##  [1] 30.01 29.50 29.59 30.19 29.91 29.51 28.16 28.37 28.63 29.49 29.11 29.68
-## [13] 30.08 28.97 28.18 27.79 27.87 28.02 28.17 27.77 28.57 29.50 29.50
-```
-
-```r
-#simple moving average
-#plot training data 
-#moving average (ma function) to plot)
-plot(ts1Train)
-lines(ma(ts1Train,order=3),col="red")
-```
-
-![](Results_files/figure-html/cbs-4.png)<!-- -->
-
-```r
 #exponential smoothing
 #fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
@@ -606,7 +526,7 @@ plot(fcast);
 lines(ts1Test,col="red")
 ```
 
-![](Results_files/figure-html/cbs-5.png)<!-- -->
+![](Results_files/figure-html/cbs-4.png)<!-- -->
 
 ```r
 #get accuracy
@@ -615,12 +535,12 @@ accuracy(fcast,ts1Test)
 ```
 
 ```
-##                       ME     RMSE       MAE         MPE     MAPE MASE      ACF1
-## Training set -0.02163342 0.585874 0.4661975 -0.09318492  1.61106  NaN 0.1601363
-## Test set      4.31289475 5.126751 4.4239474 12.13827228 12.52897  NaN 0.9116172
-##              Theil's U
-## Training set        NA
-## Test set      6.508041
+##                       ME     RMSE       MAE        MPE     MAPE     MASE
+## Training set -0.04409949 0.584818 0.4700718 -0.1700425 1.624446 0.633398
+## Test set      1.30556897 1.871256 1.5630970  4.1293770 5.037798 2.106194
+##                   ACF1 Theil's U
+## Training set 0.1531483        NA
+## Test set     0.6702398  2.377506
 ```
 
 ## Disney forecasting analysis
@@ -641,7 +561,7 @@ ggplot(data,aes(Date, disneyHigh, group=1))+
 
 ```r
 #ts function creates time series object
-ts1 <- ts(data$disneyHigh,frequency=32)
+ts1 <- ts(data$disneyHigh,frequency=10)
 #plot time series object(daily high prices for Disney)
 plot(ts1,xlab="Days+1", ylab="DIS")
 ```
@@ -649,53 +569,16 @@ plot(ts1,xlab="Days+1", ylab="DIS")
 ![](Results_files/figure-html/disney-2.png)<!-- -->
 
 ```r
-plot(decompose(ts1),xlab="Days+1")
-```
-
-```
-## Warning in plot.window(...): relative range of values ( 40 * EPS) is small (axis
-## 2)
+plot(decompose(ts1),xlab="Days*2")
 ```
 
 ![](Results_files/figure-html/disney-3.png)<!-- -->
 
 ```r
-#training & test sets-have to build sets with consecutive time points
-ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 1.8
-ts1Test <- window(ts1,start=1.8,end=2.97)
-```
+#training & test sets
+ts1Train <- window(ts1,start=1,end=3.3)
+ts1Test <- window(ts1,start=3.4,end=4.9)
 
-```
-## Warning in window.default(x, ...): 'end' value not changed
-```
-
-```r
-#show test data
-ts1Train
-```
-
-```
-## Time Series:
-## Start = c(1, 1) 
-## End = c(1, 23) 
-## Frequency = 32 
-##  [1] 127.30 123.80 124.19 126.86 126.29 125.55 125.47 123.68 123.60 124.19
-## [11] 123.31 123.75 125.55 125.94 131.36 129.50 127.40 128.12 127.40 125.73
-## [21] 127.56 128.10 128.50
-```
-
-```r
-#simple moving average
-#plot training data 
-#moving average (ma function) to plot)
-plot(ts1Train)
-lines(ma(ts1Train,order=3),col="red")
-```
-
-![](Results_files/figure-html/disney-4.png)<!-- -->
-
-```r
 #exponential smoothing
 #fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
@@ -705,7 +588,7 @@ plot(fcast);
 lines(ts1Test,col="red")
 ```
 
-![](Results_files/figure-html/disney-5.png)<!-- -->
+![](Results_files/figure-html/disney-4.png)<!-- -->
 
 ```r
 #get accuracy
@@ -714,12 +597,12 @@ accuracy(fcast,ts1Test)
 ```
 
 ```
-##                      ME      RMSE       MAE         MPE       MAPE MASE
-## Training set  0.1035092  1.762049  1.242547  0.06941358  0.9794117  NaN
-## Test set     21.4760402 26.980431 22.680005 13.30025392 14.2780438  NaN
+##                      ME      RMSE      MAE        MPE      MAPE      MASE
+## Training set 0.05591236  1.743291 1.242970 0.03219821 0.9798233 0.4375556
+## Test set     5.27529531 10.854211 8.607068 3.48983108 6.2040540 3.0298958
 ##                    ACF1 Theil's U
-## Training set 0.04350998        NA
-## Test set     0.88362910  4.321543
+## Training set 0.05275571        NA
+## Test set     0.76285026  1.879288
 ```
 
 ## Netflix forecasting analysis
@@ -740,7 +623,7 @@ ggplot(data,aes(Date, netflixHigh, group=1))+
 
 ```r
 #ts function creates time series object
-ts1 <- ts(data$netflixHigh,frequency=32)
+ts1 <- ts(data$netflixHigh,frequency=10)
 #plot time series object(daily high prices for Netflix)
 plot(ts1,xlab="Days+1", ylab="NFLX")
 ```
@@ -748,48 +631,16 @@ plot(ts1,xlab="Days+1", ylab="NFLX")
 ![](Results_files/figure-html/netflix-2.png)<!-- -->
 
 ```r
-plot(decompose(ts1),xlab="Days+1")
+plot(decompose(ts1),xlab="Days*2")
 ```
 
 ![](Results_files/figure-html/netflix-3.png)<!-- -->
 
 ```r
-#training & test sets-have to build sets with consecutive time points
-ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 1.8
-ts1Test <- window(ts1,start=1.8,end=2.97)
-```
+#training & test sets
+ts1Train <- window(ts1,start=1,end=3.3)
+ts1Test <- window(ts1,start=3.4,end=4.9)
 
-```
-## Warning in window.default(x, ...): 'end' value not changed
-```
-
-```r
-#show test data
-ts1Train
-```
-
-```
-## Time Series:
-## Start = c(1, 1) 
-## End = c(1, 23) 
-## Frequency = 32 
-##  [1] 491.04 477.00 484.87 492.00 496.29 504.63 529.55 526.37 520.99 521.82
-## [11] 536.49 535.00 544.28 551.81 557.65 572.49 551.22 554.33 541.80 533.78
-## [21] 506.85 495.14 490.06
-```
-
-```r
-#simple moving average
-#plot training data 
-#moving average (ma function) to plot)
-plot(ts1Train)
-lines(ma(ts1Train,order=3),col="red")
-```
-
-![](Results_files/figure-html/netflix-4.png)<!-- -->
-
-```r
 #exponential smoothing
 #fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
@@ -799,7 +650,7 @@ plot(fcast);
 lines(ts1Test,col="red")
 ```
 
-![](Results_files/figure-html/netflix-5.png)<!-- -->
+![](Results_files/figure-html/netflix-4.png)<!-- -->
 
 ```r
 #get accuracy
@@ -808,11 +659,11 @@ accuracy(fcast,ts1Test)
 ```
 
 ```
-##                       ME     RMSE      MAE         MPE     MAPE MASE      ACF1
-## Training set -0.02938302 11.87793  9.50370 -0.03159219 1.816018  NaN 0.1839884
-## Test set     15.05343921 21.87883 16.64579  2.88541712 3.213114  NaN 0.8152658
-##              Theil's U
-## Training set        NA
-## Test set       2.41427
+##                     ME     RMSE      MAE        MPE     MAPE      MASE
+## Training set 0.2534795 11.70942 9.389351 0.02641231 1.797039 0.2144387
+## Test set     0.5700515 10.96571 9.099121 0.06687166 1.815276 0.2078103
+##                   ACF1 Theil's U
+## Training set 0.1710957        NA
+## Test set     0.4742796  1.001417
 ```
 
