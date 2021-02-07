@@ -342,41 +342,30 @@ netflix<-read.csv("./data/netflix.csv")
 ```
 
 ## Amazon forecasting analysis
-### The line chart of the data of the high stock prices for Amazon with the associated regression line shows a  slight decrease in the high price over time. 
+### The time chart of the data of the high stock prices for Amazon shows and increase in the high stock prices from September 23 to around October 14. From there, the trend generally in  decreased until around November 2 and a sharp increase on November 3. This preceded a decrease in the high stock price until around November 8. After that decerease, the trend generally remained steady.
 
 
 ```r
 ggplot(data,aes(Date, amazonHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
-  geom_smooth(method=lm,se=FALSE, colour="black")+
-  ggtitle("High stock prices for Amazon Sept 22-Dec 22")
-```
-
-```
-## `geom_smooth()` using formula 'y ~ x'
+  ggtitle("High stock prices for Amazon Sept 23-Nov 17")
 ```
 
 ![](Results_files/figure-html/amazon-1.png)<!-- -->
 
-### The data was turned into a time series object in R with 40 observations, one for each day that the stock market was open during the time period. This time series object was decomposed. The decomposition showed that the trend had a general negative slope over time or a downtrend.  The seasonal trend showed 3 periods where there was a clear decrease in the high price.The graphed residuals and upa dn down pattern along with a sharp decrease at the end.
+### The data was turned into a time series object in R with 40 observations, one for each day that the stock market was open during the time period. A multiplicative decomposition of the time series was conducted. Plotting the trend-cycle and seasonal indices shows that the data have an upward trend during the 1st 2 segments with a downward trend in the 3rd segment followed by a stability in the trend in the 4th segment. It also has seasonal fluctuations, with the data increaseing at the beginning of each segment, reaching apeak in the middle of the segment and decreasing by the end of the segment.The data also has fairly random residuals.
 
 
 ```r
 #ts function creates time series object
 ts1 <- ts(data$amazonHigh,frequency=10)
-#plot time series object(daily high prices for Amazon)
-plot(ts1,xlab="Days*2", ylab="AMZN")
+#decomposition
+plot(decompose(ts1,type = "multiplicative"),xlab="segment")
 ```
 
 ![](Results_files/figure-html/amatime-1.png)<!-- -->
 
-```r
-plot(decompose(ts1),xlab="Days*2")
-```
-
-![](Results_files/figure-html/amatime-2.png)<!-- -->
-
-### Training and test data sets were created from the time series object with the high stock prices for the first 24 days being put into the training data while the data for the remaining 16 days were put into the test data set.
+### Training and test data sets were created from the time series object with the high stock prices for the first 24 days(60% of the data) being put into the training data while the data for the remaining 16 days (40% of the data) were put into the test data set.
 
 
 ```r
@@ -385,13 +374,34 @@ ts1Train <- window(ts1,start=1,end=3.3)
 ts1Test <- window(ts1,start=3.4,end=4.9)
 ```
 
-### The plot of the forecasted data along with the observed data showed that the forecasted results did fall within the prediction bounds. 
+### Exponential smoothing with multiplicative errors was applied to the training data.  The plot of the forecasted data along with the observed data showed that the forecasted results did fall within the prediction bounds. 
 
 
 ```r
 #exponential smoothing
-#fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
+ets1
+```
+
+```
+## ETS(M,N,N) 
+## 
+## Call:
+##  ets(y = ts1Train) 
+## 
+##   Smoothing parameters:
+##     alpha = 0.9999 
+## 
+##   Initial states:
+##     l = 3125.1279 
+## 
+##   sigma:  0.0196
+## 
+##      AIC     AICc      BIC 
+## 279.5340 280.7340 283.0681
+```
+
+```r
 #get predictions and prediction bounds with forecast function
 fcast <- forecast(ets1)
 plot(fcast); 
@@ -424,37 +434,31 @@ accuracy(fcast,ts1Test)
 ```r
 ggplot(data,aes(Date, appleHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
-  geom_smooth(method=lm,se=FALSE, colour="black")+
-  ggtitle("High stock prices for Apple Sept 22-Dec 22")
-```
-
-```
-## `geom_smooth()` using formula 'y ~ x'
+  ggtitle("High stock prices for Apple Sept 23-Nov 17")
 ```
 
 ![](Results_files/figure-html/apple-1.png)<!-- -->
 
+
 ```r
 #ts function creates time series object
 ts1 <- ts(data$appleHigh,frequency=10)
-#plot time series object(daily high prices for Apple)
-plot(ts1,xlab="Days+1", ylab="AAPL")
+#decomposition
+plot(decompose(ts1),xlab="segment")
 ```
 
-![](Results_files/figure-html/apple-2.png)<!-- -->
+![](Results_files/figure-html/apptime-1.png)<!-- -->
 
-```r
-plot(decompose(ts1),xlab="Days*2")
-```
-
-![](Results_files/figure-html/apple-3.png)<!-- -->
 
 ```r
 #training & test sets-have to build sets with consecutive time points
 ts1Train <- window(ts1,start=1,end=3.3)
 #window function creates test set that starts at time point 2.16
 ts1Test <- window(ts1,start=3.4,end=4.9)
+```
 
+
+```r
 #exponential smoothing
 #fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
@@ -464,7 +468,8 @@ plot(fcast);
 lines(ts1Test,col="red")
 ```
 
-![](Results_files/figure-html/apple-4.png)<!-- -->
+![](Results_files/figure-html/appforecast-1.png)<!-- -->
+
 
 ```r
 #get accuracy
@@ -487,36 +492,31 @@ accuracy(fcast,ts1Test)
 ```r
 ggplot(data,aes(Date, cbsHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
-  geom_smooth(method=lm,se=FALSE, colour="black")+
-  ggtitle("High stock prices for CBS/Viacom Sept 22-Dec 22")
-```
-
-```
-## `geom_smooth()` using formula 'y ~ x'
+  ggtitle("High stock prices for CBS/Viacom Sept 23-Nov 17")
 ```
 
 ![](Results_files/figure-html/cbs-1.png)<!-- -->
 
+
 ```r
 #ts function creates time series object
 ts1 <- ts(data$cbsHigh,frequency=10)
-#plot time series object(daily high prices for CBS/Viacom)
-plot(ts1,xlab="Days+*2", ylab="VIAC")
+#decomposition
+plot(decompose(ts1),xlab="segment")
 ```
 
-![](Results_files/figure-html/cbs-2.png)<!-- -->
+![](Results_files/figure-html/cbstime-1.png)<!-- -->
 
-```r
-plot(decompose(ts1),xlab="Days*2")
-```
 
-![](Results_files/figure-html/cbs-3.png)<!-- -->
 
 ```r
 #training & test sets
 ts1Train <- window(ts1,start=1,end=3.3)
 ts1Test <- window(ts1,start=3.4,end=4.9)
+```
 
+
+```r
 #exponential smoothing
 #fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
@@ -526,7 +526,8 @@ plot(fcast);
 lines(ts1Test,col="red")
 ```
 
-![](Results_files/figure-html/cbs-4.png)<!-- -->
+![](Results_files/figure-html/cbsforecast-1.png)<!-- -->
+
 
 ```r
 #get accuracy
@@ -549,36 +550,30 @@ accuracy(fcast,ts1Test)
 ```r
 ggplot(data,aes(Date, disneyHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
-  geom_smooth(method=lm,se=FALSE, colour="black")+
-  ggtitle("High stock prices for Disney Sept 22-Dec 22")
-```
-
-```
-## `geom_smooth()` using formula 'y ~ x'
+  ggtitle("High stock prices for Disney Sept 23-Nov 17")
 ```
 
 ![](Results_files/figure-html/disney-1.png)<!-- -->
 
+
 ```r
 #ts function creates time series object
 ts1 <- ts(data$disneyHigh,frequency=10)
-#plot time series object(daily high prices for Disney)
-plot(ts1,xlab="Days+1", ylab="DIS")
+#decomposition
+plot(decompose(ts1),xlab="segment")
 ```
 
-![](Results_files/figure-html/disney-2.png)<!-- -->
+![](Results_files/figure-html/disneytime-1.png)<!-- -->
 
-```r
-plot(decompose(ts1),xlab="Days*2")
-```
-
-![](Results_files/figure-html/disney-3.png)<!-- -->
 
 ```r
 #training & test sets
 ts1Train <- window(ts1,start=1,end=3.3)
 ts1Test <- window(ts1,start=3.4,end=4.9)
+```
 
+
+```r
 #exponential smoothing
 #fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
@@ -588,7 +583,8 @@ plot(fcast);
 lines(ts1Test,col="red")
 ```
 
-![](Results_files/figure-html/disney-4.png)<!-- -->
+![](Results_files/figure-html/disforecast-1.png)<!-- -->
+
 
 ```r
 #get accuracy
@@ -611,36 +607,30 @@ accuracy(fcast,ts1Test)
 ```r
 ggplot(data,aes(Date, netflixHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
-  geom_smooth(method=lm,se=FALSE, colour="black")+
-  ggtitle("High stock prices for Netflix Sept 22-Dec 22")
-```
-
-```
-## `geom_smooth()` using formula 'y ~ x'
+  ggtitle("High stock prices for Netflix Sept 23-Nov 17")
 ```
 
 ![](Results_files/figure-html/netflix-1.png)<!-- -->
 
+
 ```r
 #ts function creates time series object
 ts1 <- ts(data$netflixHigh,frequency=10)
-#plot time series object(daily high prices for Netflix)
-plot(ts1,xlab="Days+1", ylab="NFLX")
+#decomposition
+plot(decompose(ts1),xlab="segment")
 ```
 
-![](Results_files/figure-html/netflix-2.png)<!-- -->
+![](Results_files/figure-html/nettime-1.png)<!-- -->
 
-```r
-plot(decompose(ts1),xlab="Days*2")
-```
-
-![](Results_files/figure-html/netflix-3.png)<!-- -->
 
 ```r
 #training & test sets
 ts1Train <- window(ts1,start=1,end=3.3)
 ts1Test <- window(ts1,start=3.4,end=4.9)
+```
 
+
+```r
 #exponential smoothing
 #fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
@@ -650,7 +640,8 @@ plot(fcast);
 lines(ts1Test,col="red")
 ```
 
-![](Results_files/figure-html/netflix-4.png)<!-- -->
+![](Results_files/figure-html/netforecast-1.png)<!-- -->
+
 
 ```r
 #get accuracy
