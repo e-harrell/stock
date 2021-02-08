@@ -10,7 +10,7 @@ output:
 
 
 ## Summary
-### This project compares the high stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 23, 2020 to November 17, 2020 when the New York Stock Exchange was open. For each stock, it used the high prices for the first 24 dates in the time period to predict the high prices for the next 16 dates.
+### This project compares the high stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 23, 2020 to November 17, 2020 when the New York Stock Exchange was open. For each stock, it used the high prices for the first 24 dates in the time period to predict the high prices for the next 16 dates. For Amazon and Apple high stock prices, the forecasted model performed better than theaverage one-step, naïve forecast computed in-sample.
 
 
 ```r
@@ -353,7 +353,7 @@ ggplot(data,aes(Date, amazonHigh, group=1))+
 
 ![](Results_files/figure-html/amazon-1.png)<!-- -->
 
-### The data was turned into a time series object in R with 40 observations, one for each day that the stock market was open during the time period. A multiplicative decomposition of the time series was conducted. Plotting the trend-cycle and seasonal indices shows that the data have an upward trend during the 1st 2 segments with a downward trend in the 3rd segment followed by a stability in the trend in the 4th segment. It also has seasonal fluctuations, with the data increaseing at the beginning of each segment, reaching apeak in the middle of the segment and decreasing by the end of the segment.The data also has fairly random residuals.
+### The data was turned into a time series object in R with 40 observations, one for each day that the stock market was open during the time period. A multiplicative decomposition of the time series was conducted. Plotting the trend-cycle and seasonal indices shows that the data have an upward trend during the 1st 2 segments with a downward trend in the 3rd segment followed by a stability in the trend in the 4th segment. It also has seasonal fluctuations, with the data increasing at the beginning of each segment, reaching apeak in the middle of the segment and decreasing by the end of the segment.The data also has fairly random residuals.
 
 
 ```r
@@ -374,7 +374,7 @@ ts1Train <- window(ts1,start=1,end=3.3)
 ts1Test <- window(ts1,start=3.4,end=4.9)
 ```
 
-### Exponential smoothing with multiplicative errors was applied to the training data.  The plot of the forecasted data along with the observed data showed that the forecasted results did fall within the prediction bounds. 
+### The ets() function was applied to the training data to choose the best ets model to fit to the data. It returned a model with simple exponential smoothing with multiplicative errors. This model had in a smoothing parameter of 0.9999 which means that in the model, more weight is given to the more recent stock prices. This ets model was then used to forecast future values. The forecasted data was plotted along with the test data. The plot showed that the test data appears to fall within the 95% prediction intervals from the ets model.
 
 
 ```r
@@ -410,7 +410,7 @@ lines(ts1Test,col="red")
 
 ![](Results_files/figure-html/amaforecast-1.png)<!-- -->
 
-### In terms of accuracy, the root mean squared error was 61 for the training data and 65 for the test data. With a minimum value of  and a maximum value of  ,  .
+### In terms of accuracy, the mean absolute scaled error (MASE) of the forecast was about 0.6 for the test data. With MASE<1, the forecast did better in predicting the later high stock prices than the average one-step, naïve forecast computed in-sample.
 
 
 ```r
@@ -429,6 +429,7 @@ accuracy(fcast,ts1Test)
 ```
 
 ## Apple forecasting analysis
+### The time chart of the data of the high stock prices for Apple shows and increase in the high stock prices from September 23 to around October 14. From there, the trend generally in  decreased until around November 2 and a sharp increase on November 3 until around November 7. This preceded a slight decrease in the high stock price until around November 8. After that decrease, the trend generally increased until the end of the time period.
 
 
 ```r
@@ -438,6 +439,8 @@ ggplot(data,aes(Date, appleHigh, group=1))+
 ```
 
 ![](Results_files/figure-html/apple-1.png)<!-- -->
+
+### The data was turned into a time series object in R with 40 observations, one for each day that the stock market was open during the time period. An additive decomposition of the time series was conducted. Plotting the trend-cycle and seasonal indices shows that the data have an upward trend during the 1st segement lasting throught the 1st hald of the 2nd segment. The trend declined from the 2nd half of the 2nd segment until th middle of the 3rd segment. From there it increased throught the 4th segment. It also has seasonal fluctuations, with the data increasing at the beginning of each segment, reaching apeak in the middle of the segment and decreasing by the end of the segment.The data also has fairly random residuals.
 
 
 ```r
@@ -449,6 +452,8 @@ plot(decompose(ts1),xlab="segment")
 
 ![](Results_files/figure-html/apptime-1.png)<!-- -->
 
+### Training and test data sets were created from the time series object with the high stock prices for the first 24 days(60% of the data) being put into the training data while the data for the remaining 16 days (40% of the data) were put into the test data set.
+
 
 ```r
 #training & test sets-have to build sets with consecutive time points
@@ -457,11 +462,35 @@ ts1Train <- window(ts1,start=1,end=3.3)
 ts1Test <- window(ts1,start=3.4,end=4.9)
 ```
 
+### The ets() function was applied to the training data to choose the best ets model to fit to the data. It returned a model with simple exponential smoothing with multiplicative errors. This model had in a smoothing parameter of 0.9999 which means that in the model, more weight is given to the more recent stock prices. This ets model was then used to forecast future values. The forecasted data was plotted along with the test data. The plot showed that the test data appears to fall within the 80% prediction intervals from the ets model.
+
 
 ```r
 #exponential smoothing
 #fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
+ets1
+```
+
+```
+## ETS(A,N,N) 
+## 
+## Call:
+##  ets(y = ts1Train) 
+## 
+##   Smoothing parameters:
+##     alpha = 0.9999 
+## 
+##   Initial states:
+##     l = 112.1082 
+## 
+##   sigma:  2.2513
+## 
+##      AIC     AICc      BIC 
+## 119.1378 120.3378 122.6720
+```
+
+```r
 #get predictions and prediction bounds with forecast function
 fcast <- forecast(ets1)
 plot(fcast); 
@@ -469,6 +498,8 @@ lines(ts1Test,col="red")
 ```
 
 ![](Results_files/figure-html/appforecast-1.png)<!-- -->
+
+### In terms of accuracy, the mean absolute scaled error (MASE) of the forecast was about 0.6 for the test data. With MASE<1, the forecast did better in predicting the later high stock prices than the average one-step, naïve forecast computed in-sample.
 
 
 ```r
@@ -520,6 +551,28 @@ ts1Test <- window(ts1,start=3.4,end=4.9)
 #exponential smoothing
 #fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
+ets1
+```
+
+```
+## ETS(M,N,N) 
+## 
+## Call:
+##  ets(y = ts1Train) 
+## 
+##   Smoothing parameters:
+##     alpha = 0.9999 
+## 
+##   Initial states:
+##     l = 29.9983 
+## 
+##   sigma:  0.0209
+## 
+##      AIC     AICc      BIC 
+## 56.28348 57.48348 59.81764
+```
+
+```r
 #get predictions and prediction bounds with forecast function
 fcast <- forecast(ets1)
 plot(fcast); 
@@ -577,6 +630,28 @@ ts1Test <- window(ts1,start=3.4,end=4.9)
 #exponential smoothing
 #fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
+ets1
+```
+
+```
+## ETS(A,N,N) 
+## 
+## Call:
+##  ets(y = ts1Train) 
+## 
+##   Smoothing parameters:
+##     alpha = 0.7352 
+## 
+##   Initial states:
+##     l = 126.447 
+## 
+##   sigma:  1.8208
+## 
+##      AIC     AICc      BIC 
+## 108.9505 110.1505 112.4846
+```
+
+```r
 #get predictions and prediction bounds with forecast function
 fcast <- forecast(ets1)
 plot(fcast); 
@@ -634,6 +709,28 @@ ts1Test <- window(ts1,start=3.4,end=4.9)
 #exponential smoothing
 #fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
+ets1
+```
+
+```
+## ETS(M,N,N) 
+## 
+## Call:
+##  ets(y = ts1Train) 
+## 
+##   Smoothing parameters:
+##     alpha = 0.9999 
+## 
+##   Initial states:
+##     l = 490.7364 
+## 
+##   sigma:  0.0232
+## 
+##      AIC     AICc      BIC 
+## 199.8201 201.0201 203.3542
+```
+
+```r
 #get predictions and prediction bounds with forecast function
 fcast <- forecast(ets1)
 plot(fcast); 
