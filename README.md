@@ -1,2 +1,1 @@
-# stock
-time series data science project looking at stock data
+Time series forecasting project analyzing daily high stock prices 
