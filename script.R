@@ -33,15 +33,10 @@ cbs<-read.csv("./data/cbs.csv")
 netflix<-read.csv("./data/netflix.csv")
 
 #get details of all data sets
-summary(amazon)
 str(amazon)
-summary(apple)
 str(apple)
-summary(cbs)
 str(cbs)
-summary(disney)
 str(disney)
-summary(netflix)
 str(netflix)
 
 #combine into a single data set
@@ -81,57 +76,113 @@ data<-cbind(data.frame(Date=as.Date(amazon$Date),
 summary(data)
 str(data)
 
-#basic line plots for High prices for each company
+#Amazon forecasting analysis
 ggplot(data,aes(Date, amazonHigh, group=1))+
   geom_line(color="darkblue" ,size=2)+
-  geom_smooth(method=lm,se=FALSE, colour="black")+
-  ggtitle("High stock prices for Amazon Sept 22-Dec 22")
-ggplot(data,aes(Date, appleHigh, group=1))+
-  geom_line(color="darkblue" ,size=2)+
-  geom_smooth(method=lm,se=FALSE, colour="black")+
-  ggtitle("High stock prices for Apple Sept 22-Dec 22")
-ggplot(data,aes(Date, cbsHigh, group=1))+
-  geom_line(color="darkblue" ,size=2)+
-  geom_smooth(method=lm,se=FALSE, colour="black")+
-  ggtitle("High stock prices for CBS Sept 22-Dec 22")
-ggplot(data,aes(Date, disneyHigh, group=1))+
-  geom_line(color="darkblue" ,size=2)+
-  geom_smooth(method=lm,se=FALSE, colour="black")+
-  ggtitle("High stock prices for Disney Sept 22-Dec 22")
-ggplot(data,aes(Date, netflixHigh, group=1))+
-  geom_line(color="darkblue" ,size=2)+
-  geom_smooth(method=lm,se=FALSE, colour="black")+
-  ggtitle("High stock prices for Netflix Sept 22-Dec 22")
-par(mfrow=c(1,1))
-
-#Forecasting on opening Amazon prices
+  ggtitle("High stock prices for Amazon Sept 23-Nov 17")
 #ts function creates time series object
-ts1 <- ts(data$amazonOpen,frequency=32)
-#plot time series object(daily opening prices for Amazon)
-plot(ts1,xlab="Days+1", ylab="AMZN")
-plot(decompose(ts1),xlab="Days+1")
-
-#training & test sets-have to build sets with consecutive time points
-#window function creates training set that starts at time point 1 & ends at time point 5
-ts1Train <- window(ts1,start=1,end=1.7)
-#window function creates test set that starts at time point 5
-ts1Test <- window(ts1,start=1.8,end=2.97)
-ts1Train
-
-#simple moving average
-#plot training data (need forecast library to add 
-#moving average (ma function) to plot)
-plot(ts1Train)
-lines(ma(ts1Train,order=3),col="red")
-
+ts1 <- ts(data$amazonHigh,frequency=10)
+#decomposition
+plot(decompose(ts1,type = "multiplicative"),xlab="segment")
+#training & test sets
+ts1Train <- window(ts1,start=1,end=3.3)
+ts1Test <- window(ts1,start=3.4,end=4.9)
 #exponential smoothing
-#fit model that had different types of trends you want to fit
 ets1 <- ets(ts1Train)
+ets1
 #get predictions and prediction bounds with forecast function
 fcast <- forecast(ets1)
 plot(fcast); 
 lines(ts1Test,col="red")
-
 #get accuracy
-#accuracy(forcast,test set)
+#accuracy(forecast,test set)
+accuracy(fcast,ts1Test)
+
+#Apple forecasting analysis
+ggplot(data,aes(Date, appleHigh, group=1))+
+  geom_line(color="darkblue" ,size=2)+
+  ggtitle("High stock prices for Apple Sept 23-Nov 17")
+#ts function creates time series object
+ts1 <- ts(data$appleHigh,frequency=10)
+#decomposition
+plot(decompose(ts1),xlab="segment")
+#training & test sets
+ts1Train <- window(ts1,start=1,end=3.3)
+ts1Test <- window(ts1,start=3.4,end=4.9)
+#exponential smoothing
+#fit model that had different types of trends you want to fit
+ets1 <- ets(ts1Train)
+ets1
+#get predictions and prediction bounds with forecast function
+fcast <- forecast(ets1)
+plot(fcast); 
+lines(ts1Test,col="red")
+#get accuracy
+#accuracy(forecast,test set)
+accuracy(fcast,ts1Test)
+
+#CBS/Viacom forecasting analysis
+#ts function creates time series object
+ts1 <- ts(data$cbsHigh,frequency=10)
+#decomposition
+plot(decompose(ts1, type="multiplicative"),xlab="segment")
+#training & test sets
+ts1Train <- window(ts1,start=1,end=3.3)
+ts1Test <- window(ts1,start=3.4,end=4.9)
+#exponential smoothing
+#fit model that had different types of trends you want to fit
+ets1 <- ets(ts1Train)
+ets1
+#get predictions and prediction bounds with forecast function
+fcast <- forecast(ets1)
+plot(fcast); 
+lines(ts1Test,col="red")
+#get accuracy
+#accuracy(forecast,test set)
+accuracy(fcast,ts1Test)
+
+#Disney forecasting analysis
+ggplot(data,aes(Date, disneyHigh, group=1))+
+  geom_line(color="darkblue" ,size=2)+
+  ggtitle("High stock prices for Disney Sept 23-Nov 17")
+#ts function creates time series object
+ts1 <- ts(data$disneyHigh,frequency=10)
+#decomposition
+plot(decompose(ts1),xlab="segment")
+#training & test sets
+ts1Train <- window(ts1,start=1,end=3.3)
+ts1Test <- window(ts1,start=3.4,end=4.9)
+#exponential smoothing
+#fit model that had different types of trends you want to fit
+ets1 <- ets(ts1Train)
+ets1
+#get predictions and prediction bounds with forecast function
+fcast <- forecast(ets1)
+plot(fcast); 
+lines(ts1Test,col="red")
+#get accuracy
+#accuracy(forecast,test set)
+accuracy(fcast,ts1Test)
+
+#Netflix forecasting analysis
+ggplot(data,aes(Date, netflixHigh, group=1))+
+  geom_line(color="darkblue" ,size=2)+
+  ggtitle("High stock prices for Netflix Sept 23-Nov 17")
+#ts function creates time series object
+ts1 <- ts(data$netflixHigh,frequency=10)
+#decomposition
+plot(decompose(ts1, type="multiplicative"),xlab="segment")
+#training & test sets
+ts1Train <- window(ts1,start=1,end=3.3)
+ts1Test <- window(ts1,start=3.4,end=4.9)
+#exponential smoothing
+#fit model that had different types of trends you want to fit
+ets1 <- ets(ts1Train)
+ets1
+#get predictions and prediction bounds with forecast function
+fcast <- forecast(ets1)
+plot(fcast); 
+lines(ts1Test,col="red")
+#get accuracy
+#accuracy(forecast,test set)
 accuracy(fcast,ts1Test)
