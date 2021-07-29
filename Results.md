@@ -1,14 +1,14 @@
 ---
 title: "Stock prices forecasting project"
 author: "Erika Harrell"
-date: "2/3/2021"
+date: "7/28/2021"
 output: 
   html_document: 
     keep_md: yes
 ---
 
 
-### Disclaimer: This project was conducted for educational purposes only. Do not attempt to use results of this analysis to make financial decisions. The views expressed in this document do not necessarily reflect the views of the Bureau of Justice Statistics or the US Department of Justice. 
+### Disclaimer: This project was conducted for educational purposes only. Do not attempt to use results of this analysis to make financial decisions. The views expressed in this document do not necessarily reflect the views of the Bureau of Justice Statistics nor the U.S. Department of Justice. 
 
 ## Summary
 ### This project compares the high stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 23, 2020 to November 17, 2020 when the New York Stock Exchange was open. For each stock, it used the high prices for the first 24 dates in the time period to predict the high prices for the next 16 dates. For Amazon, Apple, and Netflix high stock prices, the forecasted model performed better than the average one-step, naïve forecast computed in-sample. However, for CBS/Viacom and Disney high stock prices, the forecasted model performed worse than the average one-step, naive forecast computed in-sample.
@@ -126,7 +126,7 @@ netflix<-read.csv("./data/netflix.csv")
 ##  $ High     : num  112 110 112 115 115 ...
 ##  $ Low      : num  107 105 108 113 114 ...
 ##  $ Close    : num  107 108 112 115 114 ...
-##  $ Adj.Close: num  107 108 112 115 114 ...
+##  $ Adj.Close: num  107 108 112 114 114 ...
 ##  $ Volume   : int  150718700 167743300 149981400 137672400 99382200 142675200 116120400 144712000 106243800 161498200 ...
 ```
 
@@ -137,7 +137,7 @@ netflix<-read.csv("./data/netflix.csv")
 ##  $ High     : num  30 29.5 29.6 30.2 29.9 ...
 ##  $ Low      : num  28.6 28.1 28.8 29.6 28.9 ...
 ##  $ Close    : num  28.8 29.1 29.5 29.8 29 ...
-##  $ Adj.Close: num  28.6 29 29.3 29.6 28.8 ...
+##  $ Adj.Close: num  28.4 28.7 29.1 29.4 28.5 ...
 ##  $ Volume   : int  9744900 13542900 9418000 9323400 11466500 9358800 13944100 9109000 5874900 8724400 ...
 ```
 
@@ -175,30 +175,30 @@ netflix<-read.csv("./data/netflix.csv")
 ##  Min.   :3000   Min.   :3000    Min.   :3174100   Min.   :105.2  
 ##  1st Qu.:3128   1st Qu.:3128    1st Qu.:4304800   1st Qu.:114.0  
 ##  Median :3181   Median :3181    Median :4939900   Median :116.0  
-##  Mean   :3185   Mean   :3185    Mean   :5190162   Mean   :115.9  
-##  3rd Qu.:3226   3rd Qu.:3226    3rd Qu.:5799200   3rd Qu.:118.8  
+##  Mean   :3185   Mean   :3185    Mean   :5189758   Mean   :115.9  
+##  3rd Qu.:3226   3rd Qu.:3226    3rd Qu.:5795150   3rd Qu.:118.8  
 ##  Max.   :3444   Max.   :3444    Max.   :8386400   Max.   :125.3  
 ##    appleHigh        appleLow       appleClose    appleAdj.Close 
-##  Min.   :110.2   Min.   :105.0   Min.   :107.1   Min.   :106.8  
-##  1st Qu.:115.5   1st Qu.:112.3   1st Qu.:114.7   1st Qu.:114.4  
-##  Median :117.3   Median :114.6   Median :116.0   Median :115.7  
-##  Mean   :117.6   Mean   :114.2   Mean   :115.9   Mean   :115.6  
-##  3rd Qu.:119.9   3rd Qu.:116.6   3rd Qu.:119.0   3rd Qu.:118.6  
-##  Max.   :125.4   Max.   :119.7   Max.   :124.4   Max.   :124.0  
+##  Min.   :110.2   Min.   :105.0   Min.   :107.1   Min.   :106.6  
+##  1st Qu.:115.5   1st Qu.:112.3   1st Qu.:114.7   1st Qu.:114.2  
+##  Median :117.3   Median :114.6   Median :116.0   Median :115.5  
+##  Mean   :117.6   Mean   :114.2   Mean   :115.9   Mean   :115.4  
+##  3rd Qu.:119.9   3rd Qu.:116.6   3rd Qu.:119.0   3rd Qu.:118.4  
+##  Max.   :125.4   Max.   :119.7   Max.   :124.4   Max.   :123.8  
 ##   appleVolume           cbsOpen         cbsHigh          cbsLow     
 ##  Min.   : 74271000   Min.   :27.15   Min.   :27.77   Min.   :26.99  
 ##  1st Qu.:101617725   1st Qu.:28.07   1st Qu.:28.52   1st Qu.:27.50  
 ##  Median :118379850   Median :28.84   Median :29.50   Median :28.52  
-##  Mean   :127694842   Mean   :28.94   Mean   :29.49   Mean   :28.42  
+##  Mean   :127686085   Mean   :28.94   Mean   :29.49   Mean   :28.42  
 ##  3rd Qu.:145066300   3rd Qu.:29.79   3rd Qu.:30.11   3rd Qu.:28.90  
 ##  Max.   :262330500   Max.   :31.60   Max.   :32.89   Max.   :30.99  
 ##     cbsClose      cbsAdj.Close     cbsVolume          disneyOpen   
-##  Min.   :27.13   Min.   :26.95   Min.   : 4870500   Min.   :118.2  
-##  1st Qu.:28.10   1st Qu.:27.91   1st Qu.: 7796575   1st Qu.:123.2  
-##  Median :28.89   Median :28.70   Median : 9282400   Median :125.0  
-##  Mean   :28.98   Mean   :28.78   Mean   :10299750   Mean   :127.3  
-##  3rd Qu.:29.60   3rd Qu.:29.40   3rd Qu.:11809500   3rd Qu.:127.9  
-##  Max.   :32.29   Max.   :32.07   Max.   :26843600   Max.   :144.4  
+##  Min.   :27.13   Min.   :26.72   Min.   : 4870500   Min.   :118.2  
+##  1st Qu.:28.10   1st Qu.:27.67   1st Qu.: 7796575   1st Qu.:123.2  
+##  Median :28.89   Median :28.45   Median : 9282400   Median :125.0  
+##  Mean   :28.98   Mean   :28.54   Mean   :10299698   Mean   :127.3  
+##  3rd Qu.:29.60   3rd Qu.:29.15   3rd Qu.:11809500   3rd Qu.:127.9  
+##  Max.   :32.29   Max.   :31.80   Max.   :26843600   Max.   :144.4  
 ##    disneyHigh      disneyLow      disneyClose    disneyAdj.Close
 ##  Min.   :121.5   Min.   :117.2   Min.   :118.5   Min.   :118.5  
 ##  1st Qu.:124.2   1st Qu.:122.2   1st Qu.:123.3   1st Qu.:123.3  
@@ -210,14 +210,14 @@ netflix<-read.csv("./data/netflix.csv")
 ##  Min.   : 5177700   Min.   :470.5   Min.   :477.0   Min.   :463.4  
 ##  1st Qu.: 6758225   1st Qu.:486.7   1st Qu.:491.5   1st Qu.:478.2  
 ##  Median : 8401800   Median :493.6   Median :505.3   Median :484.9  
-##  Mean   :10167175   Mean   :503.8   Mean   :511.8   Mean   :495.0  
+##  Mean   :10167048   Mean   :503.8   Mean   :511.8   Mean   :495.0  
 ##  3rd Qu.:11094200   3rd Qu.:518.2   3rd Qu.:530.6   3rd Qu.:507.1  
 ##  Max.   :35634700   Max.   :562.6   Max.   :572.5   Max.   :541.0  
 ##   netflixClose   netflixyAdj.Close netflixVolume     
 ##  Min.   :470.5   Min.   :470.5     Min.   : 3002700  
 ##  1st Qu.:485.0   1st Qu.:485.0     1st Qu.: 4171275  
 ##  Median :492.1   Median :492.1     Median : 5255050  
-##  Mean   :502.8   Mean   :502.8     Mean   : 6030870  
+##  Mean   :502.8   Mean   :502.8     Mean   : 6030592  
 ##  3rd Qu.:525.9   3rd Qu.:525.9     3rd Qu.: 7140300  
 ##  Max.   :554.1   Max.   :554.1     Max.   :17405700
 ```
@@ -235,13 +235,13 @@ netflix<-read.csv("./data/netflix.csv")
 ##  $ appleHigh        : num  112 110 112 115 115 ...
 ##  $ appleLow         : num  107 105 108 113 114 ...
 ##  $ appleClose       : num  107 108 112 115 114 ...
-##  $ appleAdj.Close   : num  107 108 112 115 114 ...
+##  $ appleAdj.Close   : num  107 108 112 114 114 ...
 ##  $ appleVolume      : num  1.51e+08 1.68e+08 1.50e+08 1.38e+08 9.94e+07 ...
 ##  $ cbsOpen          : num  29.7 28.6 28.9 30 29.6 ...
 ##  $ cbsHigh          : num  30 29.5 29.6 30.2 29.9 ...
 ##  $ cbsLow           : num  28.6 28.1 28.8 29.6 28.9 ...
 ##  $ cbsClose         : num  28.8 29.1 29.5 29.8 29 ...
-##  $ cbsAdj.Close     : num  28.6 28.9 29.3 29.6 28.8 ...
+##  $ cbsAdj.Close     : num  28.4 28.7 29.1 29.4 28.5 ...
 ##  $ cbsVolume        : num  9744900 13542900 9418000 9323400 11466500 ...
 ##  $ disneyOpen       : num  127 122 121 126 126 ...
 ##  $ disneyHigh       : num  127 124 124 127 126 ...
@@ -258,11 +258,11 @@ netflix<-read.csv("./data/netflix.csv")
 ```
 
 ## Amazon forecasting analysis
-### The time chart of the data of the high stock prices for Amazon shows a non-stationary time series. There was an increase in the high stock prices from September 23 to around October 14. From there, the trend generally in  decreased until around November 2 and a sharp increase on November 3. This preceded a decrease in the high stock price until around November 8. After that decerease, the trend generally remained steady.
+### The time chart of the data of the high stock prices for Amazon shows a non-stationary time series. There was an increase in the high stock prices from September 23 to around October 14. From there, the trend generally decreased until around November 2 and increased sharply on November 3. This preceded a decrease in the high stock price until around November 8. After that decerease, the trend generally remained steady.
 
 ![](Results_files/figure-html/amazon-1.png)<!-- -->
 
-### The data was turned into a time series object in R with 40 observations, one for each day that the stock market was open during the time period. A multiplicative decomposition of the time series was conducted. Plotting the trend-cycle and seasonal indices shows that the data have an upward trend during the 1st 2 segments with a downward trend in the 3rd segment followed by a stability in the trend in the 4th segment. It also has seasonal fluctuations, with the data increasing at the beginning of each segment, reaching a peak in the middle of the segment and decreasing by the end of the segment.The data also has fairly random residuals.
+### The data was turned into a time series object in R with 40 observations, one for each day that the stock market was open during the time period. A multiplicative decomposition of the time series was conducted. Plotting the trend-cycle and seasonal indices shows that the data has an upward trend during the 1st 2 segments with a downward trend in the 3rd segment followed by a stable trend in the 4th segment. It also has seasonal fluctuations, with the data increasing at the beginning of each segment, reaching a peak in the middle of the segment and decreasing by the end of the segment.The data also has fairly random residuals.
 
 ![](Results_files/figure-html/amatime-1.png)<!-- -->
 
@@ -270,7 +270,7 @@ netflix<-read.csv("./data/netflix.csv")
 
 
 
-### The ets() function was applied to the training data to choose the best ets (error, trend, seasonality) model to fit to the data. It returned a model with simple exponential smoothing with multiplicative errors. This model had in a smoothing parameter of 0.9999 which means that in the model, more weight is given to the more recent stock prices. This ets model was then used to forecast future values. The forecasted data was plotted along with the test data. The plot showed that the test data appears to fall within the 95% prediction intervals from the ets model.
+### The ets() function was applied to the training data to choose the best ets (error, trend, seasonality) model to fit to the data. It returned a model with simple exponential smoothing with multiplicative errors. This model had in a smoothing parameter of 0.9999 which means that in the model, more weight is given to the more recent high stock prices. This ets model was then used to forecast future values. The forecasted data was plotted along with the test data. The plot showed that the test data appears to fall within the 95% prediction intervals from the ets model.
 
 
 ```
@@ -306,11 +306,11 @@ netflix<-read.csv("./data/netflix.csv")
 ```
 
 ## Apple forecasting analysis
-### The time chart of the data of the high stock prices for Apple shows a non-stationary time series. There was an increase in the high stock prices from September 23 to around October 14. From there, the trend generally in  decreased until around November 2 and a sharp increase on November 3 until around November 7. This preceded a slight decrease in the high stock price until around November 8. After that decrease, the trend generally increased until the end of the time period.
+### The time chart of the data of the high stock prices for Apple shows a non-stationary time series. There was an increase in the high stock prices from September 23 to around October 14. From there, the trend generally decreased until around November 2 and increased sharply on November 3 until around November 7. This preceded a slight decrease in the high stock price until around November 8. After that decrease, the trend generally increased until the end of the time period.
 
 ![](Results_files/figure-html/apple-1.png)<!-- -->
 
-### The data was turned into a time series object in R with 40 observations, one for each day that the stock market was open during the time period. An additive decomposition of the time series was conducted. Plotting the trend-cycle and seasonal indices shows that the data have an upward trend during the 1st segment lasting throught the 1st half of the 2nd segment. The trend declined from the 2nd half of the 2nd segment until th middle of the 3rd segment. From there it increased throught the 4th segment. It also has seasonal fluctuations, with the data increasing at the beginning of each segment, reaching a peak in the middle of the segment and decreasing by the end of the segment.The data also has fairly random residuals.
+### The data was turned into a time series object in R with 40 observations, one for each day that the stock market was open during the time period. An additive decomposition of the time series was conducted. Plotting the trend-cycle and seasonal indices shows that the data have an upward trend during the 1st segment lasting throught the 1st half of the 2nd segment. The trend declined from the 2nd half of the 2nd segment until the middle of the 3rd segment. From there, it increased through the 4th segment. It also has seasonal fluctuations, with the data increasing at the beginning of each segment, reaching a peak in the middle of the segment and decreasing by the end of the segment.The data also has fairly random residuals.
 
 ![](Results_files/figure-html/apptime-1.png)<!-- -->
 
@@ -414,7 +414,7 @@ netflix<-read.csv("./data/netflix.csv")
 
 
 
-### The ets() function was applied to the training data to choose the best ets (error,trend, seasonality) model to fit to the data. It returned a model with simple exponential smoothing with additive errors. This model had in a smoothing parameter of 0.7352 which means that in the model, more weight is given to the more recent stock prices. This ets model was then used to forecast future values. The forecasted data was plotted along with the test data. The plot showed that a good portion of the test data to fell outside the 80% and 95% prediction intervals from the ets model.
+### The ets() function was applied to the training data to choose the best ets (error, trend, seasonality) model to fit to the data. It returned a model with simple exponential smoothing with additive errors. This model had in a smoothing parameter of 0.7352 which means that in the model, more weight is given to the more recent stock prices. This ets model was then used to forecast future values. The forecasted data was plotted along with the test data. The plot showed that a good portion of the test data to fell outside the 80% and 95% prediction intervals from the ets model.
 
 
 ```
@@ -454,7 +454,7 @@ netflix<-read.csv("./data/netflix.csv")
 
 ![](Results_files/figure-html/netflix-1.png)<!-- -->
 
-### The data was turned into a time series object in R with 40 observations, one for each day that the stock market was open during the time period. An multiplicative decomposition of the time series was conducted. Plotting the trend-cycle and seasonal indices shows that the data increased from the middle of the 1st segment until the middle of the 2nd segment. Afterwards, it decreased until the middle of the 3rd segement and remained flat until th end of the time period. It also has seasonal fluctuations, with the data increasing at the beginning of each segment, reaching a peak in the middle of the segment and decreasing by the end of the segment.The data also has fairly random residuals.
+### The data was turned into a time series object in R with 40 observations, one for each day that the stock market was open during the time period. An multiplicative decomposition of the time series was conducted. Plotting the trend-cycle and seasonal indices shows that the data increased from the middle of the 1st segment until the middle of the 2nd segment. Afterwards, it decreased until the middle of the 3rd segement and remained flat until the end of the time period. It also has seasonal fluctuations, with the data increasing at the beginning of each segment, reaching a peak in the middle of the segment and decreasing by the end of the segment.The data also has fairly random residuals.
 
 ![](Results_files/figure-html/nettime-1.png)<!-- -->
 
