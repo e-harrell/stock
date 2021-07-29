@@ -4,4 +4,5 @@
 .Ruserdata
 script.R
 stock.Rproj
-
+/data
+stock.Rmd
