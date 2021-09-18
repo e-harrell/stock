@@ -6,4 +6,9 @@ script.R
 stock.Rproj
 Results.Rmd
 /data
+Results.aux
+Results.knit.md
+Results.out
+Results.tex
+
 
