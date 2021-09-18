@@ -12,7 +12,7 @@ output:
 ### Disclaimer: This project was conducted for educational purposes only. Do not attempt to use results of this analysis to make financial decisions. The views expressed in this document do not necessarily reflect the views of the U.S. Department of Justice. 
 
 ## Summary
-### This project compares the high stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> for the dates from September 23, 2020 to November 17, 2020 when the New York Stock Exchange was open. For each stock, it used the high prices for the first 24 dates in the time period to predict the high prices for the next 16 dates. For Amazon, Apple, and Netflix high stock prices, the forecasted model performed better than the average one-step, naïve forecast computed in-sample. However, for CBS/Viacom and Disney high stock prices, the forecasted model performed worse than the average one-step, naive forecast computed in-sample.
+### This project compares the high stock prices for 5 stocks: Apple, Netflix, CBS/Viacom, Amazon, and Disney. It took prices from the Yahoo Finance website <https://finance.yahoo.com/> from September 23, 2020 to November 17, 2020 when the New York Stock Exchange was open. For each stock, it used the high prices for the first 24 dates in the time period to predict the high prices for the next 16 dates. For Amazon, Apple, and Netflix high stock prices, the forecasted model performed better than the average one-step, naïve forecast computed in-sample. However, for CBS/Viacom and Disney high stock prices, the forecasted model performed worse than the average one-step, naive forecast computed in-sample.
 
 
 ```r
@@ -106,7 +106,7 @@ netflix<-read.csv("./data/netflix.csv")
 ```
 
 ## Data Wrangling
-###  Merge into a single dataset and look at merged dataset.
+###  Merge individual datasets into a single dataset and look at summary of merged dataset.
 
 
 ```
@@ -259,7 +259,7 @@ netflix<-read.csv("./data/netflix.csv")
 ```
 
 ## Amazon forecasting analysis
-### The time chart of the data of the high stock prices for Amazon shows a non-stationary time series. There was an increase in the high stock prices from September 23 to around October 14. From there, the trend generally decreased until around November 2 and increased sharply on November 3. This preceded a decrease in the high stock price until around November 8. After that decerease, the trend generally remained steady.
+### The time chart of the data of the high stock prices for Amazon shows a non-stationary time series. There was an increase in the high stock prices from September 23 to around October 14. From there, the trend generally decreased until around November 2 and increased sharply on November 3. This preceded a decrease in the high stock price until around November 8. After that decrease, the trend generally remained steady.
 
 ![](Results_files/figure-html/amazon-1.png)<!-- -->
 
@@ -355,7 +355,7 @@ netflix<-read.csv("./data/netflix.csv")
 ```
 
 ## CBS/Viacom forecasting analysis
-### The plot of time series of the high stock prices for CBS/Viacom shows a more stationary time series than the plots of the Apple and Amazon time series. However, the CBS/Viacom time series is still nonstationary, with the high stock prices increasing from around October 28 until around November 4 and another sharp increase from November 9 to the end of the time series.
+### The plot of time series of the high stock prices for CBS/Viacom shows a more stationary time series than those of Apple and Amazon. However, the CBS/Viacom time series is still nonstationary, with the high stock prices increasing from around October 28 until around November 4 and another sharp increase from November 9 to the end of the time series.
 
 ![](Results_files/figure-html/cbs-1.png)<!-- -->
 
